@@ -245,7 +245,3 @@ Cópia de bd_estoque.sql
 createtable.py
 mainwindow.ui
 teste.py
-wind_addforn.ui
-wind_addprod.ui
-bd_estoque.db
-bd_estoque.sqbpro

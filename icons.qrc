@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="Icons">
+    <file>Icons/Avitech_m.png</file>
+    <file>Icons/icons8-delete-view-48.png</file>
+    <file>Icons/icons8-delete-view-96.png</file>
+    <file>Icons/icons8-open-view-48.png</file>
+    <file>Icons/icons8-open-view-96.png</file>
+    <file>Icons/icons8-view-headline-48.png</file>
+    <file>Icons/icons8-view-headline-96.png</file>
+  </qresource>
+</RCC>

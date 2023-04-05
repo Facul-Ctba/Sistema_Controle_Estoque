@@ -103,13 +103,13 @@ class Jan_Add_Prod(QWidget, Ui_wind_add_prod):
         serie = dfprod['COD_FORN'].squeeze()
         result = serie.str.match(teste2, case=False)
         for i in result.values:
-            if i == True:
+            if i is True:
                 window.show_mensagem('>> Produto já cadastrado!')
                 return
         serie = dfprod['PRODUTO'].squeeze()
         result = serie.str.match(teste1, case=False)
         for i in result.values:
-            if i == True:
+            if i is True:
                 window.show_mensagem('>> Produto já cadastrado!')
                 return
 
@@ -158,7 +158,7 @@ class Jan_Add_Forn(QWidget, Ui_wind_add_forn):
         serie = dfforn['FORN_NOME'].squeeze()
         result = serie.str.match(teste1, case=False)
         for i in result.values:
-            if i == True:
+            if i is True:
                 window.show_mensagem('>> Fabricante já cadastrado!')
                 return
 

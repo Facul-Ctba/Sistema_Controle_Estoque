@@ -1,5 +1,6 @@
 import sqlite3 as sql
 import sys
+from datetime import date, datetime
 
 import pandas as pd
 from PySide6 import QtCore
@@ -11,6 +12,64 @@ from qt_material import apply_stylesheet, list_themes
 from ui_mainwindow import Ui_MainWindow
 from ui_wind_addforn import Ui_wind_add_forn
 from ui_wind_addprod import Ui_wind_add_prod
+from ui_wind_entraprod import Ui_wind_entr_prod
+
+
+class Jan_Entr_Prod(QWidget, Ui_wind_entr_prod):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        self.pb_confirma_entr.clicked.connect(self.confirma_entr_prod)
+        self.pb_cancela_entr.clicked.connect(window.show_mensagem(''))
+        self.pb_cancela_entr.clicked.connect(self.close_jan_entrprod)
+
+    def confirma_entr_prod(self):
+        data = self.le_data.text()
+        quantidade = self.le_quant.text()
+        if not data or not quantidade:
+            window.show_mensagem(
+                '>> Data e/ou Quantidade não podem ser vazios!')
+            return
+        registro = window.indice
+        df, conn = window.conectar("PRODUTOS")
+        df1 = df.query('`PROD_ID` == @registro')
+
+        saldo = df.loc[df1.index, 'SALDO']
+        saldo = saldo + float(self.le_quant.text())
+        df.loc[df1.index, 'SALDO'] = saldo
+        df.to_sql('PRODUTOS', conn, if_exists="replace", index=False)
+        conn.commit()
+        conn.close()
+
+        data = pd.to_datetime(pd.Series(data), dayfirst=True)
+        dtForm_usa = data.dt.strftime('%Y-%m-%d')
+        dtForm_br = data.dt.strftime('%d-%m-%Y')
+
+        data_usa = dtForm_usa.values
+        data_br = dtForm_br.values
+
+        for x in df1.values:
+            lista = x
+        lst_nova = []
+        lst_nova.append(data_usa[0])
+        lst_nova.append(float(quantidade))
+        lst_nova.append(lista[1])
+        lst_nova.append(lista[2])
+        lst_nova.append(lista[3])
+        df, conn = window.conectar("ENTRADAS")
+        df.loc[len(df)] = lst_nova
+        df.to_sql('ENTRADAS', conn, if_exists="replace", index=False)
+        conn.commit()
+        conn.close()
+        window.dados_entradas()
+        window.dados_prod()
+        window.show_mensagem('>> Entrada de produto efetuada com sucesso')
+        self.close_jan_entrprod()
+
+    def close_jan_entrprod(self):
+        window.pb_entrada.setEnabled(True)
+        self.close()
 
 
 class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
@@ -19,6 +78,7 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
         self.setupUi(self)
 
         self.pb_confirma_prod.clicked.connect(self.confirma_alt_prod)
+        self.pb_cancela_prod.clicked.connect(window.show_mensagem(''))
         self.pb_cancela_prod.clicked.connect(self.close_jan_altprod)
 
     def confirma_alt_prod(self):
@@ -54,6 +114,7 @@ class Jan_Alt_Forn(QWidget, Ui_wind_add_forn):
         self.setupUi(self)
 
         self.pb_confirma_forn.clicked.connect(self.confirma_alt_forn)
+        self.pb_cancela_forn.clicked.connect(window.show_mensagem(''))
         self.pb_cancela_forn.clicked.connect(self.close_jan_altforn)
 
     def confirma_alt_forn(self):
@@ -86,6 +147,7 @@ class Jan_Add_Prod(QWidget, Ui_wind_add_prod):
 
         self.pb_confirma_prod.clicked.connect(self.confirma_prod)
         self.pb_cancela_prod.clicked.connect(self.close_janprod)
+        self.pb_cancela_prod.clicked.connect(window.show_mensagem(''))
 
     def confirma_prod(self):
         teste1 = self.le_descprod.text()
@@ -141,6 +203,7 @@ class Jan_Add_Forn(QWidget, Ui_wind_add_forn):
         self.setupUi(self)
 
         self.pb_confirma_forn.clicked.connect(self.confirma_forn)
+        self.pb_cancela_forn.clicked.connect(window.show_mensagem(''))
         self.pb_cancela_forn.clicked.connect(self.close_janforn)
 
     def confirma_forn(self):
@@ -188,7 +251,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
         MainWindow.resize(self, 800, 600)
         self.setWindowTitle("Sistema de Controle de Estoque")
-        # self.showMaximized()
 
         self.tw_prod.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tw_fornec.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
@@ -201,12 +263,19 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
         self.dados_forn()
 
+        self.dados_entradas()
+
         self.tw_prod.setColumnWidth(0, 60)
         self.tw_prod.setColumnWidth(1, 150)
         self.tw_prod.setColumnWidth(2, 300)
         self.tw_prod.setColumnWidth(3, 700)
         self.tw_prod.setColumnWidth(4, 200)
         self.tw_prod.setColumnWidth(5, 100)
+
+        self.tw_entradas.setColumnWidth(0, 150)
+        self.tw_entradas.setColumnWidth(1, 150)
+        self.tw_entradas.setColumnWidth(2, 150)
+        self.tw_entradas.setColumnWidth(3, 300)
 
         self.tabWidget.setCurrentIndex(0)
 
@@ -248,6 +317,34 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                 else:
                     if col == 0:
                         item_tabela.setTextAlignment(Qt.AlignHCenter)
+                tab_widget.setItem(item[0], col, item_tabela)
+
+    def dados_entradas(self):
+        self.replace = {'IN_CODINT': '', 'IN_CODFORN': ''}
+        self.carrega_entradas(tabela='ENTRADAS', replace=self.replace,
+                              tab_widget=self.tw_entradas)
+
+    def carrega_entradas(self, tabela, replace, tab_widget):
+        df, conn = self.conectar(tabela)
+
+        df.fillna(value=replace, inplace=True)
+        df.to_sql(tabela, conn, if_exists="replace", index=False)
+        conn.commit()
+        conn.close()
+
+        tab_widget.setRowCount(df.shape[0])
+        tab_widget.setColumnCount(df.shape[1])
+        for item in df.iterrows():     # ! Alimenta a Table Widget
+            values = item[1]
+            for col, valor in enumerate(values):
+                if col == 0:
+                    data = datetime.strptime(valor, '%Y-%m-%d').date()
+                    data = data.strftime('%d/%m/%Y')
+                    item_tabela = QTableWidgetItem(str(data))
+                else:
+                    item_tabela = QTableWidgetItem(str(valor))
+                if col in [0, 1, 2]:
+                    item_tabela.setTextAlignment(Qt.AlignHCenter)
                 tab_widget.setItem(item[0], col, item_tabela)
 
     def adicionar(self):
@@ -296,7 +393,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                     '>> Favor selecionar um item para exclusão!')
                 return
             registro = int(QTableWidgetItem.text(self.tw_fornec.item(row, 0)))
-            print(registro)
             dfforn, conn = self.conectar("FORNECEDORES")
             df1 = dfforn.query('`FORN_ID` == @registro')
             dfforn.drop(df1.index, inplace=True)
@@ -341,6 +437,31 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.pb_alterar.setEnabled(False)
             self.jan_alt_forn.show()
 
+    def entrada(self):
+        aba = self.tabWidget.currentIndex()
+        if aba == 0:        # ! ENTRADA DE PRODUTOS
+            row = self.tw_prod.currentRow()
+            if row == -1:
+                self.show_mensagem(
+                    '>> Favor selecionar um item para efetuar a entrada!')
+                return
+            registro = int(QTableWidgetItem.text(self.tw_prod.item(row, 0)))
+            df, conn = self.conectar("PRODUTOS")
+            df1 = df.query('`PROD_ID` == @registro')
+            conn.close()
+            for x in df1.values:
+                lst_item = x
+            self.janEntrProd = Jan_Entr_Prod()
+            self.indice = lst_item[0]
+            self.janEntrProd.cp_codint.setText(lst_item[1])
+            self.janEntrProd.cp_codfabr.setText(lst_item[2])
+            self.janEntrProd.cp_descprod.setText(lst_item[3])
+            self.janEntrProd.cp_saldo.setText(str(lst_item[5]))
+            self.pb_entrada.setEnabled(False)
+            self.janEntrProd.show()
+            self.dados_prod()
+            self.show_mensagem('>> Entrada de produtos efetuada com sucesso!')
+
     def reindex(self):
         self.show_mensagem('')
         aba = self.tabWidget.currentIndex()
@@ -374,17 +495,19 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
     def estilos(self):
 
         self.extra = {
-            # Button colors
-            'danger': '#dc3545',
-            'warning': '#ffc107',
-            'success': '#17a2b8',
             # Font
             'font_family': 'Arial',
+            'font_size': '14px',
+            'line_height': '14px',
+
+            'pyside6': True,
         }
 
         self.temas = list_themes()
-        for x in self.temas:
-            self.cb_temas.addItem(x)
+        self.cb_temas.clear()
+        self.cb_temas.addItems(self.temas)
+        self.cb_temas.setCurrentIndex(8)
+        self.muda_tema('dark_teal.xml')
 
     def muda_tema(self, t):
         apply_stylesheet(app, theme=t, invert_secondary=False,
@@ -393,7 +516,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
     def left_menu(self):
         width = self.fr_esquerda.width()
         if width == 9:
-            newWidth = 200
+            newWidth = 250
         else:
             newWidth = 9
 
@@ -415,36 +538,63 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.dados_prod()
             self.dados_forn()
 
+    def Ativa_entr_filtro(self):
+        if self.rb_entr_filtro.isChecked():
+            self.tw_entradas.setSortingEnabled(True)
+        else:
+            self.tw_entradas.setSortingEnabled(False)
+            self.dados_entradas()
+
+    def pagina(self, x):
+        self.lb_pagina.setText(x)
+        self.lb_pagina.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
     def slots(self):
         self.cb_temas.currentTextChanged.connect(self.muda_tema)
         self.pb_menu.clicked.connect(self.left_menu)
-        self.pb_cadastros.clicked.connect(
-            lambda: self.sw_paginas.setCurrentWidget(self.Cadastros))
-        self.pb_entradas.clicked.connect(
-            lambda: self.sw_paginas.setCurrentWidget(self.Entadas))
-        self.pb_saidas.clicked.connect(
-            lambda: self.sw_paginas.setCurrentWidget(self.Saidas))
-        self.pb_compra.clicked.connect(
-            lambda: self.sw_paginas.setCurrentWidget(self.PontoCompra))
+        self.pb_cadastros.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.Cadastros))
+        self.pb_cadastros.clicked.connect(lambda: self.pagina('CADASTROS'))
+        self.pb_entradas.clicked.connect(lambda: self.show_mensagem(''))
+        self.pb_entradas.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.Entradas))
+        self.pb_entradas.clicked.connect(lambda: self.pagina('ENTRADAS'))
+        self.pb_saidas.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.Saidas))
+        self.pb_saidas.clicked.connect(lambda: self.pagina('SAÍDAS'))
+        self.pb_compra.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.PontoCompra))
+        self.pb_compra.clicked.connect(lambda: self.pagina('PONTO DE COMPRAS'))
 
+        self.pb_adicionar.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_adicionar.clicked.connect(lambda: self.adicionar())
+        self.pb_excluir.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_excluir.clicked.connect(lambda: self.excluir())
+        self.pb_alterar.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_alterar.clicked.connect(lambda: self.alterar())
+        self.pb_entrada.clicked.connect(lambda: self.show_mensagem(''))
+        self.pb_entrada.clicked.connect(lambda: self.entrada())
+        self.pb_reindex.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_reindex.clicked.connect(lambda: self.reindex())
 
         self.rb_filtro.toggled.connect(self.Ativa_filtro)
+        self.rb_entr_filtro.toggled.connect(self.Ativa_entr_filtro)
 
     def show_mensagem(self, m):
         self.lb_mensagens.setText(m)
 
 
 if __name__ == "__main__":
-
     app = QApplication([])
     window = MainWindow()
 
-    app.setStyle('Fusion')
-    apply_stylesheet(app, theme='dark_teal.xml', invert_secondary=False)
+    extra = {
+            # Font
+            'font_family': 'Arial',
+            'font_size': '14px',
+            'line_height': '14px',
 
+            'pyside6': True,
+        }
+
+    app.setStyle('Fusion')
+    apply_stylesheet(app, theme='dark_teal.xml', invert_secondary=False, extra=extra)
+    window.showMaximized()
     window.show()
     sys.exit(app.exec())

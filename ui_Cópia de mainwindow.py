@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'mainwindow.ui'
+## Form generated from reading UI file 'Cópia de mainwindow.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -16,18 +16,18 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QHeaderView, QLabel, QLayout, QMainWindow,
-    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
-    QStackedWidget, QTabWidget, QTableView, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QComboBox,
+    QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QLayout, QMainWindow, QPushButton, QRadioButton,
+    QSizePolicy, QSpacerItem, QStackedWidget, QTabWidget,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 import rc_icons
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1268, 750)
+        MainWindow.resize(1268, 717)
         font = QFont()
         font.setPointSize(14)
         MainWindow.setFont(font)
@@ -465,18 +465,44 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_7.setContentsMargins(0, -1, 0, 9)
-        self.tw_prod = QTableView(self.tab_prod)
+        self.tw_prod = QTableWidget(self.tab_prod)
+        if (self.tw_prod.columnCount() < 5):
+            self.tw_prod.setColumnCount(5)
+        font5 = QFont()
+        font5.setFamilies([u"Arial"])
+        font5.setPointSize(14)
+        font5.setBold(True)
+        __qtablewidgetitem = QTableWidgetItem()
+        __qtablewidgetitem.setFont(font5);
+        self.tw_prod.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        __qtablewidgetitem1.setFont(font5);
+        self.tw_prod.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        __qtablewidgetitem2.setFont(font5);
+        self.tw_prod.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        __qtablewidgetitem3.setFont(font5);
+        self.tw_prod.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        __qtablewidgetitem4.setFont(font5);
+        self.tw_prod.setHorizontalHeaderItem(4, __qtablewidgetitem4)
         self.tw_prod.setObjectName(u"tw_prod")
-        sizePolicy3.setHeightForWidth(self.tw_prod.sizePolicy().hasHeightForWidth())
-        self.tw_prod.setSizePolicy(sizePolicy3)
+        self.tw_prod.setEnabled(True)
         self.tw_prod.setFont(font1)
         self.tw_prod.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
         self.tw_prod.setFrameShape(QFrame.WinPanel)
+        self.tw_prod.setFrameShadow(QFrame.Sunken)
         self.tw_prod.setLineWidth(2)
+        self.tw_prod.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.tw_prod.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tw_prod.setAlternatingRowColors(True)
-        self.tw_prod.setSortingEnabled(True)
+        self.tw_prod.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_prod.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tw_prod.setSortingEnabled(False)
+        self.tw_prod.setWordWrap(False)
         self.tw_prod.horizontalHeader().setStretchLastSection(True)
-        self.tw_prod.verticalHeader().setStretchLastSection(False)
+        self.tw_prod.verticalHeader().setVisible(True)
 
         self.verticalLayout_7.addWidget(self.tw_prod)
 
@@ -491,16 +517,28 @@ class Ui_MainWindow(object):
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setSizeConstraint(QLayout.SetMinimumSize)
         self.verticalLayout_6.setContentsMargins(0, 9, 0, 9)
-        self.tw_fornec = QTableView(self.tab_forn)
+        self.tw_fornec = QTableWidget(self.tab_forn)
+        if (self.tw_fornec.columnCount() < 2):
+            self.tw_fornec.setColumnCount(2)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        __qtablewidgetitem5.setFont(font5);
+        self.tw_fornec.setHorizontalHeaderItem(0, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        __qtablewidgetitem6.setFont(font5);
+        self.tw_fornec.setHorizontalHeaderItem(1, __qtablewidgetitem6)
         self.tw_fornec.setObjectName(u"tw_fornec")
         self.tw_fornec.setFont(font1)
-        self.tw_fornec.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
         self.tw_fornec.setFrameShape(QFrame.WinPanel)
         self.tw_fornec.setLineWidth(2)
+        self.tw_fornec.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.tw_fornec.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tw_fornec.setAlternatingRowColors(True)
-        self.tw_fornec.setSortingEnabled(True)
+        self.tw_fornec.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_fornec.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tw_fornec.setSortingEnabled(False)
+        self.tw_fornec.setWordWrap(False)
         self.tw_fornec.horizontalHeader().setStretchLastSection(True)
-        self.tw_fornec.verticalHeader().setStretchLastSection(False)
+        self.tw_fornec.verticalHeader().setVisible(False)
 
         self.verticalLayout_6.addWidget(self.tw_fornec)
 
@@ -611,12 +649,36 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_10.addWidget(self.fr_entr_cabec)
 
-        self.tw_entradas = QTableView(self.Entradas)
+        self.tw_entradas = QTableWidget(self.Entradas)
+        if (self.tw_entradas.columnCount() < 5):
+            self.tw_entradas.setColumnCount(5)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        __qtablewidgetitem7.setFont(font5);
+        self.tw_entradas.setHorizontalHeaderItem(0, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        __qtablewidgetitem8.setFont(font5);
+        self.tw_entradas.setHorizontalHeaderItem(1, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        __qtablewidgetitem9.setFont(font5);
+        self.tw_entradas.setHorizontalHeaderItem(2, __qtablewidgetitem9)
+        __qtablewidgetitem10 = QTableWidgetItem()
+        __qtablewidgetitem10.setFont(font5);
+        self.tw_entradas.setHorizontalHeaderItem(3, __qtablewidgetitem10)
+        __qtablewidgetitem11 = QTableWidgetItem()
+        __qtablewidgetitem11.setFont(font5);
+        self.tw_entradas.setHorizontalHeaderItem(4, __qtablewidgetitem11)
         self.tw_entradas.setObjectName(u"tw_entradas")
+        self.tw_entradas.setFont(font1)
         self.tw_entradas.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
+        self.tw_entradas.setStyleSheet(u"background-color: rgb(86, 101, 115);")
         self.tw_entradas.setFrameShape(QFrame.WinPanel)
         self.tw_entradas.setLineWidth(2)
+        self.tw_entradas.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContentsOnFirstShow)
+        self.tw_entradas.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tw_entradas.setAlternatingRowColors(True)
+        self.tw_entradas.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_entradas.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tw_entradas.setWordWrap(False)
         self.tw_entradas.horizontalHeader().setStretchLastSection(True)
 
         self.verticalLayout_10.addWidget(self.tw_entradas)
@@ -675,12 +737,12 @@ class Ui_MainWindow(object):
         self.lb_mensagens.setSizePolicy(sizePolicy5)
         self.lb_mensagens.setMinimumSize(QSize(750, 40))
         self.lb_mensagens.setMaximumSize(QSize(16777215, 16777215))
-        font5 = QFont()
-        font5.setFamilies([u"Arial"])
-        font5.setPointSize(14)
-        font5.setBold(True)
-        font5.setItalic(False)
-        self.lb_mensagens.setFont(font5)
+        font6 = QFont()
+        font6.setFamilies([u"Arial"])
+        font6.setPointSize(14)
+        font6.setBold(True)
+        font6.setItalic(False)
+        self.lb_mensagens.setFont(font6)
         self.lb_mensagens.setMargin(10)
 
         self.horizontalLayout_3.addWidget(self.lb_mensagens, 0, Qt.AlignLeft|Qt.AlignVCenter)
@@ -696,7 +758,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.sw_paginas.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -720,13 +782,37 @@ class Ui_MainWindow(object):
         self.pb_entrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
         self.pb_reindex.setText(QCoreApplication.translate("MainWindow", u"Re-indexar ID", None))
         self.rb_filtro.setText(QCoreApplication.translate("MainWindow", u"Ativar Filtro", None))
+        ___qtablewidgetitem = self.tw_prod.horizontalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Interno", None));
+        ___qtablewidgetitem1 = self.tw_prod.horizontalHeaderItem(1)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Fabricante", None));
+        ___qtablewidgetitem2 = self.tw_prod.horizontalHeaderItem(2)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
+        ___qtablewidgetitem3 = self.tw_prod.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Fabricante", None));
+        ___qtablewidgetitem4 = self.tw_prod.horizontalHeaderItem(4)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Saldo", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_prod), QCoreApplication.translate("MainWindow", u"Produtos", None))
+        ___qtablewidgetitem5 = self.tw_fornec.horizontalHeaderItem(0)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"ID", None));
+        ___qtablewidgetitem6 = self.tw_fornec.horizontalHeaderItem(1)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Fabricante", None));
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_forn), QCoreApplication.translate("MainWindow", u"Fabricantes", None))
         self.pb_entr_add.setText(QCoreApplication.translate("MainWindow", u"Adicionar", None))
         self.pb_entr_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_entr_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_entr_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.rb_entr_filtro.setText(QCoreApplication.translate("MainWindow", u"Ativar Filtro", None))
+        ___qtablewidgetitem7 = self.tw_entradas.horizontalHeaderItem(0)
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"Data", None));
+        ___qtablewidgetitem8 = self.tw_entradas.horizontalHeaderItem(1)
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
+        ___qtablewidgetitem9 = self.tw_entradas.horizontalHeaderItem(2)
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Interno", None));
+        ___qtablewidgetitem10 = self.tw_entradas.horizontalHeaderItem(3)
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Fabricante", None));
+        ___qtablewidgetitem11 = self.tw_entradas.horizontalHeaderItem(4)
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Ponto de compra", None))
         self.lb_mensagens.setText(QCoreApplication.translate("MainWindow", u"Mensagens", None))

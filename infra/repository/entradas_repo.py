@@ -1,21 +1,17 @@
 from infra.configs.connection import DBConnectionHandler
-from infra.entities.estoque import Estoque, Fabricantes
+from infra.entities.estoque import Entradas, Estoque, Fabricantes
 from sqlalchemy.orm.exc import NoResultFound
 
 
-class EstoqueRepo:
+class EntradasRepo:
     def my_select(self):
         with DBConnectionHandler() as db:
             try:
-                data = db.session.query(Estoque)\
-                    .select_from(Fabricantes)\
-                    .join(Estoque, Fabricantes.ID_FABR == Estoque.ID_FABR)\
+                data = db.session.query(Entradas)\
                     .with_entities(
-                        Estoque.COD_INT,
-                        Estoque.COD_FABR,
-                        Estoque.PRODUTO,
-                        Fabricantes.NOMEFABR,
-                        Estoque.SALDO
+                    Entradas.IN_DATA,
+                    Entradas.IN_QUANT,
+                    Entradas.IN_CODFABR
                     )\
                     .all()
                 return data
@@ -23,10 +19,11 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_select_one(self, **kwargs):
+    def my_select_one(self, variavel):
         with DBConnectionHandler() as db:
             try:
-                data = db.session.query(Estoque).filter_by(**kwargs).first()
+                data = db.session.query(Entradas).filter(
+                    Entradas.IN_CODFABR == variavel).one()
                 return data
             except NoResultFound:
                 return None
@@ -34,33 +31,31 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_insert(self, codint, codfabr, produto, idfabr, saldo):
+    def my_insert(self, indata, inquant, incodfabr):
         with DBConnectionHandler() as db:
             try:
-                data_insert = Estoque(COD_INT=codint, COD_FABR=codfabr, PRODUTO=produto,
-                                      ID_FABR=idfabr, SALDO=saldo)
+                data_insert = Entradas(IN_DATA=indata, IN_QUAT=inquant, IN_CODFABR=incodfabr)
                 db.session.add(data_insert)
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()
                 raise exception
 
-    def my_delete(self, codfabr):
+    def my_delete(self, incodfabr):
         with DBConnectionHandler() as db:
             try:
-                db.session.query(Estoque).filter(
-                    Estoque.COD_FABR == codfabr).delete()
+                db.session.query(Entradas).filter(
+                    Entradas.IN_CODFABR == incodfabr).delete()
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()
                 raise exception
 
-    def my_update(self, codint, codfabr, produto, idfabr, saldo):
+    def my_update(self, indata, inquant, incodfabr):
         with DBConnectionHandler() as db:
             try:
-                db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr).update({
-                    "COD_INT": codint, "COD_FABR": codfabr, "PRODUTO": produto,
-                    "ID_FABR": idfabr, "SALDO": saldo})
+                db.session.query(Entradas).filter(Entradas.IN_CODFABR == incodfabr).update({
+                    "IN_DATA": indata, "IN_QUANT": inquant, "IN_CODFABR": incodfabr})
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()

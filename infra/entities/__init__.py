@@ -1,1 +1,1 @@
-from .estoque import Estoque
+# from .estoque import Estoque

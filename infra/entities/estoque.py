@@ -9,13 +9,12 @@ class Estoque(Base):
     COD_INT = Column(String)
     COD_FABR = Column(String, primary_key=True)
     PRODUTO = Column(String, nullable=False)
-    ID_FABR = Column(String, ForeignKey("fabricantes.ID_FABR"))
+    ID_FABR = Column(Integer, ForeignKey("fabricantes.ID_FABR"))
     SALDO = Column(Float, nullable=False)
-    fabricantes = relationship("Fabricantes", backref="fabricantes", lazy="subquery")
+    fabricante = relationship("Fabricantes", backref="fabricantes", lazy="subquery")
 
     def __repr__(self):
-        return f'[Cód. Int. = {self.COD_INT} | Cód. Fabr. = {self.COD_FABR} | \
-Produto = {self.PRODUTO} | Fabric. = {self.fabricantes.NOMEFABR} | Saldo = {self.SALDO}]\n'
+        return f'["{self.COD_INT}", "{self.COD_FABR}", "{self.PRODUTO}", "{self.fabricante.NOMEFABR}", {self.SALDO}]'
 
 
 class Fabricantes(Base):
@@ -25,4 +24,16 @@ class Fabricantes(Base):
     NOMEFABR = Column(String, nullable=False)
 
     def __repr__(self):
-        return f'[ID Fabr. = {self.ID_FABR} | Nome Fabr. = {self.NOMEFABR}]\n'
+        return f'[{self.ID_FABR}, "{self.NOMEFABR}"]'
+
+
+class Entradas(Base):
+    __tablename__ = 'entradas'
+
+    IN_DATA = Column(String, nullable=False)
+    IN_QUANT = Column(Float, nullable=False)
+    IN_CODFABR = Column(String, ForeignKey("estoque.COD_FABR"), primary_key=True)
+    fk_codfabr = relationship("Estoque", backref="estoque", lazy="subquery")
+
+    def __repr__(self):
+        return f'["{self.IN_DATA}", {self.IN_QUANT}, "{self.estoque.COD_FABR}"]'

@@ -1,18 +1,56 @@
-import sqlite3 as sql
 import sys
-from datetime import date, datetime
+from datetime import datetime
 
 import pandas as pd
 from PySide6 import QtCore
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QAbstractTableModel, Qt
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QMainWindow,
                                QTableWidgetItem, QWidget)
 from qt_material import apply_stylesheet, list_themes
 
+from infra.repository.entradas_repo import EntradasRepo
+from infra.repository.estoque_repo import EstoqueRepo
+from infra.repository.fabricante_repo import FabricantesRepo
 from ui_mainwindow import Ui_MainWindow
 from ui_wind_addforn import Ui_wind_add_forn
 from ui_wind_addprod import Ui_wind_add_prod
 from ui_wind_entraprod import Ui_wind_entr_prod
+
+
+class TableModel(QAbstractTableModel):
+    def __init__(self, data, columns):
+        super(TableModel, self).__init__()
+        self._data = data
+        self.columns = columns
+
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.columns[section]
+        if orientation == Qt.Vertical and role == Qt.DisplayRole:
+            return f"{section + 1}"
+
+    def data(self, index, role):
+        value = self._data[index.row()][index.column()]
+        if role == Qt.DisplayRole:
+            if isinstance(value, datetime):
+                return value.strftime("%Y-%m-%d")
+            if isinstance(value, float):
+                return "%.2f" % value
+            # Default (anything not captured above: e.g. int)
+            return value
+        if role == Qt.TextAlignmentRole:
+            if index.column() == 0:
+                return Qt.AlignVCenter + Qt.AlignHCenter
+            if isinstance(value, float):
+                return Qt.AlignVCenter + Qt.AlignRight
+            if isinstance(value, int):
+                return Qt.AlignVCenter + Qt.AlignHCenter
+
+    def rowCount(self, index):
+        return len(self._data)
+
+    def columnCount(self, index):
+        return len(self._data[0])
 
 
 class Jan_Entr_Prod(QWidget, Ui_wind_entr_prod):
@@ -32,13 +70,13 @@ class Jan_Entr_Prod(QWidget, Ui_wind_entr_prod):
                 '>> Data e/ou Quantidade não podem ser vazios!')
             return
         registro = window.indice
-        df, conn = window.conectar("PRODUTOS")
+        df, conn = window.conectar("ESTOQUE")
         df1 = df.query('`PROD_ID` == @registro')
 
         saldo = df.loc[df1.index, 'SALDO']
         saldo = saldo + float(self.le_quant.text())
         df.loc[df1.index, 'SALDO'] = saldo
-        df.to_sql('PRODUTOS', conn, if_exists="replace", index=False)
+        df.to_sql('ESTOQUE', conn, if_exists="replace", index=False)
         conn.commit()
         conn.close()
 
@@ -85,7 +123,7 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
         altprod = []
         registro = window.indice
 
-        df, conn = window.conectar("PRODUTOS")
+        df, conn = window.conectar("ESTOQUE")
         df1 = df.query('`PROD_ID` == @registro')
 
         altprod.append(registro)
@@ -96,7 +134,7 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
         altprod.append(df1.at[registro-1, "SALDO"])
 
         df.loc[df1.index] = altprod
-        df.to_sql('PRODUTOS', conn, if_exists="replace", index=False)
+        df.to_sql('ESTOQUE', conn, if_exists="replace", index=False)
         conn.commit()
         conn.close()
         window.dados_prod()
@@ -121,14 +159,14 @@ class Jan_Alt_Forn(QWidget, Ui_wind_add_forn):
         altforn = []
         registro = window.indice
 
-        df, conn = window.conectar("FORNECEDORES")
+        df, conn = window.conectar("FABRICANTES")
         df1 = df.query('`FORN_ID` == @registro')
 
         altforn.append(registro)
         altforn.append(self.le_nomeforn.text())
 
         df.loc[df1.index] = altforn
-        df.to_sql('FORNECEDORES', conn, if_exists="replace", index=False)
+        df.to_sql('FABRICANTES', conn, if_exists="replace", index=False)
         conn.commit()
         conn.close()
         window.dados_forn()
@@ -150,45 +188,31 @@ class Jan_Add_Prod(QWidget, Ui_wind_add_prod):
         self.pb_cancela_prod.clicked.connect(window.show_mensagem(''))
 
     def confirma_prod(self):
-        teste1 = self.le_descprod.text()
-        teste2 = self.le_codforn.text()
-        if not teste1 or not teste2:
+        codfabr = self.le_codforn.text()
+        descprod = self.le_descprod.text()
+        if not descprod or not codfabr:
             window.show_mensagem(
                 '>> Descrição do Produto e/ou Código do Fabricante não podem ser vazios!')
             return
-        addprod = []
-        dfprod, conn = window.conectar("PRODUTOS")
-        lastrow = dfprod.shape[0]-1
-        ultID = int(dfprod.at[lastrow, 'PROD_ID'])
-        novoID = ultID+1
+        result = EstoqueRepo.my_select_one(self, **{"COD_FABR": codfabr})
+        if result is not None:
+            window.show_mensagem('>> Produto já cadastrado!')
+            return
+        result = EstoqueRepo.my_select_one(self, **{"PRODUTO": descprod})
+        if result is not None:
+            window.show_mensagem('>> Produto já cadastrado!')
+            return
 
-        serie = dfprod['COD_FORN'].squeeze()
-        result = serie.str.match(teste2, case=False)
-        for i in result.values:
-            if i is True:
-                window.show_mensagem('>> Produto já cadastrado!')
-                return
-        serie = dfprod['PRODUTO'].squeeze()
-        result = serie.str.match(teste1, case=False)
-        for i in result.values:
-            if i is True:
-                window.show_mensagem('>> Produto já cadastrado!')
-                return
-
-        addprod.append(novoID)
-        addprod.append(self.le_codint.text())
-        addprod.append(self.le_codforn.text())
-        addprod.append(self.le_descprod.text())
-        addprod.append(self.cb_fornec.currentText())
-        addprod.append(0.0)      # ! Saldo
-
-        dfprod.loc[novoID] = addprod
-        dfprod.to_sql("PRODUTOS", conn, if_exists="replace", index=False)
-
-        conn.commit()
-        conn.close()
+        nomeforn = self.cb_fornec.currentText()
+        id_fabr = FabricantesRepo.my_select_one(self, variavel=nomeforn)
+        EstoqueRepo.my_insert(self,
+                              codint=self.le_codint.text(),
+                              codfabr=self.le_codforn.text(),
+                              produto=self.le_descprod.text(),
+                              idfabr=id_fabr.ID_FABR,
+                              saldo=0.0)
         window.tw_prod.scrollToBottom()
-        window.dados_prod()
+        window.carrega_dados("ESTOQUE", window.tw_prod)
         window.show_mensagem('>> Produto adicionado com sucesso!')
         self.close_janprod()
 
@@ -207,34 +231,19 @@ class Jan_Add_Forn(QWidget, Ui_wind_add_forn):
         self.pb_cancela_forn.clicked.connect(self.close_janforn)
 
     def confirma_forn(self):
-        teste1 = self.le_nomeforn.text()
-        if not teste1:
+        nomefabr = self.le_nomeforn.text()
+        if not nomefabr:
             window.show_mensagem(
                 '>> Nome do Fabricante não pode ser vazio!')
             return
-        addforn = []
-        dfforn, conn = window.conectar("FORNECEDORES")
-        lastrow = dfforn.shape[0]-1
-        ultID = int(dfforn.at[lastrow, 'FORN_ID'])
-        novoID = ultID+1
+        result = FabricantesRepo.my_select_one(self, **{"NOMEFABR": nomefabr})
+        if result is not None:
+            window.show_mensagem('>> Fabricante já cadastrado!')
+            return
 
-        serie = dfforn['FORN_NOME'].squeeze()
-        result = serie.str.match(teste1, case=False)
-        for i in result.values:
-            if i is True:
-                window.show_mensagem('>> Fabricante já cadastrado!')
-                return
-
-        addforn.append(novoID)
-        addforn.append(self.le_nomeforn.text())
-
-        dfforn.loc[novoID] = addforn
-        dfforn.to_sql("FORNECEDORES", conn, if_exists="replace", index=False)
-
-        conn.commit()
-        conn.close()
+        FabricantesRepo.my_insert(self, nomefabr=nomefabr)
         window.tw_fornec.scrollToBottom()
-        window.dados_forn()
+        window.carrega_dados("FABRICANTES", window.tw_fornec)
         window.show_mensagem('>> Fornecedor adicionado com sucesso!')
         self.close_janforn()
 
@@ -255,23 +264,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.tw_prod.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tw_fornec.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
 
-        self.estilos()
-
-        self.slots()
-
-        self.dados_prod()
-
-        self.dados_forn()
-
-        self.dados_entradas()
-
-        self.tw_prod.setColumnWidth(0, 60)
-        self.tw_prod.setColumnWidth(1, 150)
-        self.tw_prod.setColumnWidth(2, 300)
-        self.tw_prod.setColumnWidth(3, 700)
-        self.tw_prod.setColumnWidth(4, 200)
-        self.tw_prod.setColumnWidth(5, 100)
-
         self.tw_entradas.setColumnWidth(0, 150)
         self.tw_entradas.setColumnWidth(1, 150)
         self.tw_entradas.setColumnWidth(2, 150)
@@ -279,94 +271,63 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
         self.tabWidget.setCurrentIndex(0)
 
+        self.estilos()
+
+        self.slots()
+
+        self.carrega_dados("ESTOQUE", self.tw_prod)
+
+        self.carrega_dados("FABRICANTES", self.tw_fornec)
+
+        self.carrega_dados("ENTRADAS", self.tw_entradas)
+
+        # self.dados_entradas()
+
 # !=================== FUNÇÕES ============================
 
-    def conectar(self, tabela):
-        conn = sql.connect("bd_estoque.db")
-        df = pd.read_sql(f"select * from {tabela}", conn)
-        return df, conn
-
-    def dados_prod(self):
-        self.replace = {'COD_INT': '', 'COD_FORN': '', 'FORN_NOME': '',
-                        'SALDO': 0.0}
-        self.carrega_dados(tabela='PRODUTOS', replace=self.replace,
-                           tab_widget=self.tw_prod)
-
-    def dados_forn(self):
-        self.replace = {'FORN_NOME': ''}
-        self.carrega_dados(tabela='FORNECEDORES', replace=self.replace,
-                           tab_widget=self.tw_fornec)
-
-    def carrega_dados(self, tabela, replace, tab_widget):
-        df, conn = self.conectar(tabela)
-
-        df.fillna(value=replace, inplace=True)
-        df.to_sql(tabela, conn, if_exists="replace", index=False)
-        conn.commit()
-        conn.close()
-
-        tab_widget.setRowCount(df.shape[0])
-        tab_widget.setColumnCount(df.shape[1])
-        for item in df.iterrows():     # ! Alimenta a Table Widget
-            values = item[1]
-            for col, valor in enumerate(values):
-                item_tabela = QTableWidgetItem(str(valor))
-                if tabela == 'PRODUTOS':
-                    if col in [0, 1, 5]:
-                        item_tabela.setTextAlignment(Qt.AlignHCenter)
-                else:
-                    if col == 0:
-                        item_tabela.setTextAlignment(Qt.AlignHCenter)
-                tab_widget.setItem(item[0], col, item_tabela)
-
-    def dados_entradas(self):
-        self.replace = {'IN_CODINT': '', 'IN_CODFORN': ''}
-        self.carrega_entradas(tabela='ENTRADAS', replace=self.replace,
-                              tab_widget=self.tw_entradas)
-
-    def carrega_entradas(self, tabela, replace, tab_widget):
-        df, conn = self.conectar(tabela)
-
-        df.fillna(value=replace, inplace=True)
-        df.to_sql(tabela, conn, if_exists="replace", index=False)
-        conn.commit()
-        conn.close()
-
-        tab_widget.setRowCount(df.shape[0])
-        tab_widget.setColumnCount(df.shape[1])
-        for item in df.iterrows():     # ! Alimenta a Table Widget
-            values = item[1]
-            for col, valor in enumerate(values):
-                if col == 0:
-                    data = datetime.strptime(valor, '%Y-%m-%d').date()
-                    data = data.strftime('%d/%m/%Y')
-                    item_tabela = QTableWidgetItem(str(data))
-                else:
-                    item_tabela = QTableWidgetItem(str(valor))
-                if col in [0, 1, 2]:
-                    item_tabela.setTextAlignment(Qt.AlignHCenter)
-                tab_widget.setItem(item[0], col, item_tabela)
+    def carrega_dados(self, tabela, tab_widget):
+        if tabela == "ESTOQUE":
+            self.registros = EstoqueRepo.my_select(self)
+            self.colunas = ['Cód. Interno', 'Cód. Fabricante',
+                            'Descrição do Produto', 'Fabricante', 'Saldo']
+            self.model = TableModel(self.registros, columns=self.colunas)
+            tab_widget.setModel(self.model)
+            tab_widget.setColumnWidth(0, 150)
+            tab_widget.setColumnWidth(1, 300)
+            tab_widget.setColumnWidth(2, 700)
+            tab_widget.setColumnWidth(3, 200)
+            tab_widget.setColumnWidth(4, 100)
+        elif tabela == "FABRICANTES":
+            self.registros = FabricantesRepo.my_select(self)
+            self.colunas = ['Fabricante ID', 'Nome do Fabricante']
+            self.model = TableModel(self.registros, columns=self.colunas)
+            tab_widget.setModel(self.model)
+            tab_widget.setColumnWidth(0, 150)
+            tab_widget.setColumnWidth(1, 700)
+        elif tabela == "ENTRADAS":
+            self.registros = EntradasRepo.my_select(self)
+            self.colunas = ['Data de Entrada', 'Quantidade', 'Código do Fabricante']
+            self.model = TableModel(self.registros, columns=self.colunas)
+            tab_widget.setModel(self.model)
+            tab_widget.setColumnWidth(0, 200)
+            tab_widget.setColumnWidth(1, 200)
+            tab_widget.setColumnWidth(2, 300)
 
     def adicionar(self):
         self.show_mensagem('')
         aba = self.tabWidget.currentIndex()
         if aba == 0:                                # !ADICIONAR PRODUTOS
+            self.reg_fabr = FabricantesRepo.my_select(self)
             self.jan_add_prod = Jan_Add_Prod()
-            self.enche_cbforn(self.jan_add_prod)
+            self.jan_add_prod.cb_fornec.clear()
+            for item in self.reg_fabr:
+                self.jan_add_prod.cb_fornec.addItem(str(item[1]))
             self.pb_adicionar.setEnabled(False)
             self.jan_add_prod.show()
         elif aba == 1:                              # !ADICIONAR FABRICANTES
             self.jan_add_forn = Jan_Add_Forn()
             self.pb_adicionar.setEnabled(False)
             self.jan_add_forn.show()
-
-    def enche_cbforn(self, janela):
-        self.janela = janela
-        df, conn = self.conectar("FORNECEDORES")
-        self.janela.cb_fornec.clear()
-        for item in df.itertuples(False, 'reg'):
-            self.janela.cb_fornec.addItem(str(item[1]))
-        conn.close()
 
     def excluir(self):
         self.show_mensagem('')
@@ -378,10 +339,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                     '>> Favor selecionar um item para exclusão!')
                 return
             registro = int(QTableWidgetItem.text(self.tw_prod.item(row, 0)))
-            dfprod, conn = self.conectar("PRODUTOS")
+            dfprod, conn = self.conectar("ESTOQUE")
             df1 = dfprod.query('`PROD_ID` == @registro')
             dfprod.drop(df1.index, inplace=True)
-            dfprod.to_sql('PRODUTOS', conn, if_exists="replace", index=False)
+            dfprod.to_sql('ESTOQUE', conn, if_exists="replace", index=False)
             conn.commit()
             conn.close()
             self.dados_prod()
@@ -393,10 +354,10 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                     '>> Favor selecionar um item para exclusão!')
                 return
             registro = int(QTableWidgetItem.text(self.tw_fornec.item(row, 0)))
-            dfforn, conn = self.conectar("FORNECEDORES")
+            dfforn, conn = self.conectar("FABRICANTES")
             df1 = dfforn.query('`FORN_ID` == @registro')
             dfforn.drop(df1.index, inplace=True)
-            dfforn.to_sql('FORNECEDORES', conn,
+            dfforn.to_sql('FABRICANTES', conn,
                           if_exists="replace", index=False)
             conn.commit()
             conn.close()
@@ -445,18 +406,18 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                 self.show_mensagem(
                     '>> Favor selecionar um item para efetuar a entrada!')
                 return
-            registro = int(QTableWidgetItem.text(self.tw_prod.item(row, 0)))
-            df, conn = self.conectar("PRODUTOS")
-            df1 = df.query('`PROD_ID` == @registro')
+            registro = QTableWidgetItem.text(self.tw_prod.item(row, 1))
+            df, conn = self.conectar("ESTOQUE")
+            df1 = df.query('`COD_FABR` == @registro')
             conn.close()
             for x in df1.values:
                 lst_item = x
             self.janEntrProd = Jan_Entr_Prod()
             self.indice = lst_item[0]
-            self.janEntrProd.cp_codint.setText(lst_item[1])
-            self.janEntrProd.cp_codfabr.setText(lst_item[2])
-            self.janEntrProd.cp_descprod.setText(lst_item[3])
-            self.janEntrProd.cp_saldo.setText(str(lst_item[5]))
+            self.janEntrProd.cp_codint.setText(lst_item[0])
+            self.janEntrProd.cp_codfabr.setText(lst_item[1])
+            self.janEntrProd.cp_descprod.setText(lst_item[2])
+            self.janEntrProd.cp_saldo.setText(str(lst_item[4]))
             self.pb_entrada.setEnabled(False)
             self.janEntrProd.show()
             self.dados_prod()
@@ -466,12 +427,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.show_mensagem('')
         aba = self.tabWidget.currentIndex()
         if aba == 0:
-            df, conn = self.conectar("PRODUTOS")
+            df, conn = self.conectar("ESTOQUE")
             novoindice = 0
             for itens in range(df.shape[0]):
                 novoindice += 1
                 df.iat[itens, 0] = novoindice
-            df.to_sql("PRODUTOS", conn, if_exists="replace", index=False)
+            df.to_sql("ESTOQUE", conn, if_exists="replace", index=False)
             conn.commit()
             conn.close()
             self.tw_prod.scrollToBottom()
@@ -479,12 +440,12 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.show_mensagem(
                 '>> Re-indexação dos Produtos concluída com sucesso!')
         elif aba == 1:
-            df, conn = self.conectar("FORNECEDORES")
+            df, conn = self.conectar("FABRICANTES")
             novoindice = 0
             for itens in range(df.shape[0]):
                 novoindice += 1
                 df.iat[itens, 0] = novoindice
-            df.to_sql("FORNECEDORES", conn, if_exists="replace", index=False)
+            df.to_sql("FABRICANTES", conn, if_exists="replace", index=False)
             conn.commit()
             conn.close()
             self.tw_fornec.scrollToBottom()
@@ -535,8 +496,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         else:
             self.tw_prod.setSortingEnabled(False)
             self.tw_fornec.setSortingEnabled(False)
-            self.dados_prod()
-            self.dados_forn()
+            self.carrega_dados("ESTOQUE", self.tw_prod)
+            self.carrega_dados("FABRICANTES", self.tw_fornec)
 
     def Ativa_entr_filtro(self):
         if self.rb_entr_filtro.isChecked():

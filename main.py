@@ -120,24 +120,26 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
         self.pb_cancela_prod.clicked.connect(self.close_jan_altprod)
 
     def confirma_alt_prod(self):
-        altprod = []
-        registro = window.indice
+        codint = self.le_codint.text()
+        codfabr = self.le_codforn.text()
+        descprod = self.le_descprod.text()
+        if not descprod or not codfabr:
+            window.show_mensagem(
+                '>> Descrição do Produto e/ou Código do Fabricante não podem ser vazios!')
+            return
+        codfabr_old = window.codfabr_old
 
-        df, conn = window.conectar("ESTOQUE")
-        df1 = df.query('`PROD_ID` == @registro')
+        nomefabr = self.cb_fornec.currentText()
+        id_fabr = FabricantesRepo.my_select_one(self, **{"NOMEFABR": nomefabr})
+        saldo = EstoqueRepo.my_select_one(self, **{"COD_FABR": codfabr_old})
+        EstoqueRepo.my_update(self, codfabr_old=codfabr_old,
+                              codint=codint,
+                              codfabr=codfabr,
+                              produto=descprod,
+                              idfabr=id_fabr.ID_FABR,
+                              saldo=saldo.SALDO)
 
-        altprod.append(registro)
-        altprod.append(self.le_codint.text())
-        altprod.append(self.le_codforn.text())
-        altprod.append(self.le_descprod.text())
-        altprod.append(self.cb_fornec.currentText())
-        altprod.append(df1.at[registro-1, "SALDO"])
-
-        df.loc[df1.index] = altprod
-        df.to_sql('ESTOQUE', conn, if_exists="replace", index=False)
-        conn.commit()
-        conn.close()
-        window.dados_prod()
+        window.carrega_dados("ESTOQUE", window.tw_prod)
         window.show_mensagem('>> Produto alterado com sucesso!')
         self.close_jan_altprod()
 
@@ -286,8 +288,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
         self.carrega_dados("ENTRADAS", self.tw_entradas)
 
-        # self.dados_entradas()
-
 # !=================== FUNÇÕES ============================
 
     def carrega_dados(self, tabela, tab_widget):
@@ -362,20 +362,25 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.show_mensagem('')
         aba = self.tabWidget.currentIndex()
         if aba == 0:
-            row = self.tw_prod.currentRow()
-            if row == -1:
+            codint = self.tw_prod.selectionModel().selectedRows(column=0)
+            codfabr = self.tw_prod.selectionModel().selectedRows(column=1)
+            descprod = self.tw_prod.selectionModel().selectedRows(column=2)
+            nomefabr = self.tw_prod.selectionModel().selectedRows(column=3)
+            if len(codint) <= 0:
                 self.show_mensagem(
-                    '>> Favor selecionar um item para alteração!')
+                    '>> Favor selecionar um item para exclusão!')
                 return
-            self.indice = int(QTableWidgetItem.text(self.tw_prod.item(row, 0)))
-            itens = self.tw_prod.selectedItems()
+            self.codfabr_old = codfabr[0].data()
+            self.reg_fabr = FabricantesRepo.my_select(self)
             self.jan_alt_prod = Jan_Alt_Prod()
-            self.jan_alt_prod.le_codint.setText(itens[1].text())
-            self.jan_alt_prod.le_codforn.setText(itens[2].text())
-            self.jan_alt_prod.le_descprod.setText(itens[3].text())
-            self.enche_cbforn(self.jan_alt_prod)
-            ind = self.jan_alt_prod.cb_fornec.findText(itens[4].text())
+            self.jan_alt_prod.cb_fornec.clear()
+            for item in self.reg_fabr:
+                self.jan_alt_prod.cb_fornec.addItem(str(item[1]))
+            ind = self.jan_alt_prod.cb_fornec.findText(nomefabr[0].data())
             self.jan_alt_prod.cb_fornec.setCurrentIndex(ind)
+            self.jan_alt_prod.le_codint.setText(codint[0].data())
+            self.jan_alt_prod.le_codforn.setText(codfabr[0].data())
+            self.jan_alt_prod.le_descprod.setText(descprod[0].data())
             self.pb_alterar.setEnabled(False)
             self.jan_alt_prod.show()
         elif aba == 1:

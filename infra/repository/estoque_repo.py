@@ -55,10 +55,10 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_update(self, codint, codfabr, produto, idfabr, saldo):
+    def my_update(self, codfabr_old, codint, codfabr, produto, idfabr, saldo):
         with DBConnectionHandler() as db:
             try:
-                db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr).update({
+                db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr_old).update({
                     "COD_INT": codint, "COD_FABR": codfabr, "PRODUTO": produto,
                     "ID_FABR": idfabr, "SALDO": saldo})
                 db.session.commit()

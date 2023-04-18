@@ -188,6 +188,7 @@ class Jan_Add_Prod(QWidget, Ui_wind_add_prod):
         self.pb_cancela_prod.clicked.connect(window.show_mensagem(''))
 
     def confirma_prod(self):
+        codint = self.le_codint.text()
         codfabr = self.le_codforn.text()
         descprod = self.le_descprod.text()
         if not descprod or not codfabr:
@@ -196,19 +197,23 @@ class Jan_Add_Prod(QWidget, Ui_wind_add_prod):
             return
         result = EstoqueRepo.my_select_one(self, **{"COD_FABR": codfabr})
         if result is not None:
-            window.show_mensagem('>> Produto já cadastrado!')
+            window.show_mensagem('>> Código do Fabricante já cadastrado!')
             return
         result = EstoqueRepo.my_select_one(self, **{"PRODUTO": descprod})
         if result is not None:
-            window.show_mensagem('>> Produto já cadastrado!')
+            window.show_mensagem('>> Descrição do Produto já cadastrada!')
+            return
+        result = EstoqueRepo.my_select_one(self, **{"COD_INT": codint})
+        if result is not None:
+            window.show_mensagem('>> Código Interno já cadastrado!')
             return
 
-        nomeforn = self.cb_fornec.currentText()
-        id_fabr = FabricantesRepo.my_select_one(self, variavel=nomeforn)
+        nomefabr = self.cb_fornec.currentText()
+        id_fabr = FabricantesRepo.my_select_one(self, **{"NOMEFABR": nomefabr})
         EstoqueRepo.my_insert(self,
-                              codint=self.le_codint.text(),
-                              codfabr=self.le_codforn.text(),
-                              produto=self.le_descprod.text(),
+                              codint=codint,
+                              codfabr=codfabr,
+                              produto=descprod,
                               idfabr=id_fabr.ID_FABR,
                               saldo=0.0)
         window.tw_prod.scrollToBottom()
@@ -333,35 +338,24 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.show_mensagem('')
         aba = self.tabWidget.currentIndex()
         if aba == 0:        # ! EXCLUIR PRODUTOS
-            row = self.tw_prod.currentRow()
-            if row == -1:
+            registro = self.tw_prod.selectionModel().selectedRows(column=1)
+            if len(registro) <= 0:
                 self.show_mensagem(
                     '>> Favor selecionar um item para exclusão!')
                 return
-            registro = int(QTableWidgetItem.text(self.tw_prod.item(row, 0)))
-            dfprod, conn = self.conectar("ESTOQUE")
-            df1 = dfprod.query('`PROD_ID` == @registro')
-            dfprod.drop(df1.index, inplace=True)
-            dfprod.to_sql('ESTOQUE', conn, if_exists="replace", index=False)
-            conn.commit()
-            conn.close()
-            self.dados_prod()
+            codfabr = registro[0].data()
+            EstoqueRepo.my_delete(self, codfabr)
+            self.carrega_dados("ESTOQUE", self.tw_prod)
             self.show_mensagem('>> Produto excluído com sucesso!')
         elif aba == 1:      # ! EXCLUIR FORNECEDOR
-            row = self.tw_fornec.currentRow()
-            if row == -1:
+            registro = self.tw_fornec.selectionModel().selectedRows(column=0)
+            if len(registro) <= 0:
                 self.show_mensagem(
                     '>> Favor selecionar um item para exclusão!')
                 return
-            registro = int(QTableWidgetItem.text(self.tw_fornec.item(row, 0)))
-            dfforn, conn = self.conectar("FABRICANTES")
-            df1 = dfforn.query('`FORN_ID` == @registro')
-            dfforn.drop(df1.index, inplace=True)
-            dfforn.to_sql('FABRICANTES', conn,
-                          if_exists="replace", index=False)
-            conn.commit()
-            conn.close()
-            self.dados_forn()
+            idfabr = registro[0].data()
+            FabricantesRepo.my_delete(self, idfabr)
+            self.carrega_dados("FABRICANTES", self.tw_fornec)
             self.show_mensagem('>> Fornecedor excluído com sucesso!')
 
     def alterar(self):

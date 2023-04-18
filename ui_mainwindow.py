@@ -16,11 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QHeaderView, QLabel, QLayout, QMainWindow,
-    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
-    QStackedWidget, QTabWidget, QTableView, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QFrame,
+    QHBoxLayout, QHeaderView, QLabel, QLayout,
+    QMainWindow, QPushButton, QRadioButton, QSizePolicy,
+    QSpacerItem, QStackedWidget, QTabWidget, QTableView,
+    QVBoxLayout, QWidget)
 import rc_icons
 
 class Ui_MainWindow(object):
@@ -474,6 +474,8 @@ class Ui_MainWindow(object):
         self.tw_prod.setFrameShape(QFrame.WinPanel)
         self.tw_prod.setLineWidth(2)
         self.tw_prod.setAlternatingRowColors(True)
+        self.tw_prod.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_prod.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tw_prod.setSortingEnabled(True)
         self.tw_prod.horizontalHeader().setStretchLastSection(True)
         self.tw_prod.verticalHeader().setStretchLastSection(False)
@@ -498,6 +500,8 @@ class Ui_MainWindow(object):
         self.tw_fornec.setFrameShape(QFrame.WinPanel)
         self.tw_fornec.setLineWidth(2)
         self.tw_fornec.setAlternatingRowColors(True)
+        self.tw_fornec.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_fornec.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tw_fornec.setSortingEnabled(True)
         self.tw_fornec.horizontalHeader().setStretchLastSection(True)
         self.tw_fornec.verticalHeader().setStretchLastSection(False)
@@ -613,10 +617,14 @@ class Ui_MainWindow(object):
 
         self.tw_entradas = QTableView(self.Entradas)
         self.tw_entradas.setObjectName(u"tw_entradas")
+        self.tw_entradas.setFont(font1)
         self.tw_entradas.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
+        self.tw_entradas.setStyleSheet(u"background-color: rgb(86, 101, 115);")
         self.tw_entradas.setFrameShape(QFrame.WinPanel)
         self.tw_entradas.setLineWidth(2)
         self.tw_entradas.setAlternatingRowColors(True)
+        self.tw_entradas.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_entradas.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tw_entradas.horizontalHeader().setStretchLastSection(True)
 
         self.verticalLayout_10.addWidget(self.tw_entradas)

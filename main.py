@@ -140,6 +140,7 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
                               saldo=saldo.SALDO)
 
         window.carrega_dados("ESTOQUE", window.tw_prod)
+        window.carrega_dados("ENTRADAS", window.tw_entradas)
         window.show_mensagem('>> Produto alterado com sucesso!')
         self.close_jan_altprod()
 
@@ -158,20 +159,14 @@ class Jan_Alt_Forn(QWidget, Ui_wind_add_forn):
         self.pb_cancela_forn.clicked.connect(self.close_jan_altforn)
 
     def confirma_alt_forn(self):
-        altforn = []
-        registro = window.indice
-
-        df, conn = window.conectar("FABRICANTES")
-        df1 = df.query('`FORN_ID` == @registro')
-
-        altforn.append(registro)
-        altforn.append(self.le_nomeforn.text())
-
-        df.loc[df1.index] = altforn
-        df.to_sql('FABRICANTES', conn, if_exists="replace", index=False)
-        conn.commit()
-        conn.close()
-        window.dados_forn()
+        nomefabr = self.le_nomeforn.text()
+        if not nomefabr:
+            window.show_mensagem('>> Nome do Fronecedor não pode ser vazio!')
+            return
+        nomefabr_old = window.nomefabr_old
+        FabricantesRepo.my_update(self, nomefabr_old=nomefabr_old, nomefabr=nomefabr)
+        window.carrega_dados("FABRICANTES", window.tw_fornec)
+        window.carrega_dados("ESTOQUE", window.tw_prod)
         window.show_mensagem('>> Fornecedor alterado com sucesso!')
         self.close_jan_altforn()
 
@@ -299,7 +294,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             tab_widget.setModel(self.model)
             tab_widget.setColumnWidth(0, 150)
             tab_widget.setColumnWidth(1, 300)
-            tab_widget.setColumnWidth(2, 700)
+            tab_widget.setColumnWidth(2, 600)
             tab_widget.setColumnWidth(3, 200)
             tab_widget.setColumnWidth(4, 100)
         elif tabela == "FABRICANTES":
@@ -311,12 +306,13 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             tab_widget.setColumnWidth(1, 700)
         elif tabela == "ENTRADAS":
             self.registros = EntradasRepo.my_select(self)
-            self.colunas = ['Data de Entrada', 'Quantidade', 'Código do Fabricante']
+            self.colunas = ['Data de Entrada', 'Quantidade', 'Código do Fabricante', 'Descrição do Produto']
             self.model = TableModel(self.registros, columns=self.colunas)
             tab_widget.setModel(self.model)
             tab_widget.setColumnWidth(0, 200)
             tab_widget.setColumnWidth(1, 200)
             tab_widget.setColumnWidth(2, 300)
+            tab_widget.setColumnWidth(3, 500)
 
     def adicionar(self):
         self.show_mensagem('')
@@ -384,16 +380,14 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.pb_alterar.setEnabled(False)
             self.jan_alt_prod.show()
         elif aba == 1:
-            row = self.tw_fornec.currentRow()
-            if row == -1:
+            nomefabr = self.tw_fornec.selectionModel().selectedRows(column=1)
+            if len(nomefabr) <= 0:
                 self.show_mensagem(
                     '>> Favor selecionar um item para alteração!')
                 return
-            self.indice = int(QTableWidgetItem.text(
-                self.tw_fornec.item(row, 0)))
-            itens = self.tw_fornec.selectedItems()
+            self.nomefabr_old = nomefabr[0].data()
             self.jan_alt_forn = Jan_Alt_Forn()
-            self.jan_alt_forn.le_nomeforn.setText(itens[1].text())
+            self.jan_alt_forn.le_nomeforn.setText(self.nomefabr_old)
             self.pb_alterar.setEnabled(False)
             self.jan_alt_forn.show()
 

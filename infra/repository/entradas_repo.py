@@ -8,10 +8,13 @@ class EntradasRepo:
         with DBConnectionHandler() as db:
             try:
                 data = db.session.query(Entradas)\
+                    .select_from(Estoque)\
+                    .join(Entradas, Entradas.IN_IDPROD == Estoque.ID_PROD)\
                     .with_entities(
                     Entradas.IN_DATA,
                     Entradas.IN_QUANT,
-                    Entradas.IN_CODFABR
+                    Estoque.COD_FABR,
+                    Estoque.PRODUTO
                     )\
                     .all()
                 return data
@@ -19,11 +22,10 @@ class EntradasRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_select_one(self, variavel):
+    def my_select_one(self, **kwargs):
         with DBConnectionHandler() as db:
             try:
-                data = db.session.query(Entradas).filter(
-                    Entradas.IN_CODFABR == variavel).one()
+                data = db.session.query(Entradas).filter_by(**kwargs).first()
                 return data
             except NoResultFound:
                 return None
@@ -31,31 +33,31 @@ class EntradasRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_insert(self, indata, inquant, incodfabr):
+    def my_insert(self, indata, inquant, inidprod):
         with DBConnectionHandler() as db:
             try:
-                data_insert = Entradas(IN_DATA=indata, IN_QUAT=inquant, IN_CODFABR=incodfabr)
+                data_insert = Entradas(IN_DATA=indata, IN_QUANT=inquant, IN_IDPROD=inidprod)
                 db.session.add(data_insert)
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()
                 raise exception
 
-    def my_delete(self, incodfabr):
+    def my_delete(self, inidprod):
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Entradas).filter(
-                    Entradas.IN_CODFABR == incodfabr).delete()
+                    Entradas.IN_IDPROD == inidprod).delete()
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()
                 raise exception
 
-    def my_update(self, indata, inquant, incodfabr):
+    def my_update(self, indata, inquant, inidprod):
         with DBConnectionHandler() as db:
             try:
-                db.session.query(Entradas).filter(Entradas.IN_CODFABR == incodfabr).update({
-                    "IN_DATA": indata, "IN_QUANT": inquant, "IN_CODFABR": incodfabr})
+                db.session.query(Entradas).filter(Entradas.IN_IDPROD == inidprod).update({
+                    "IN_DATA": indata, "IN_QUANT": inquant, "IN_IDPROD": inidprod})
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()

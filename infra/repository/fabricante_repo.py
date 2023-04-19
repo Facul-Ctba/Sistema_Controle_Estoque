@@ -49,11 +49,11 @@ class FabricantesRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_update(self, idfabr, nomefabr):
+    def my_update(self, nomefabr_old, nomefabr):
         with DBConnectionHandler() as db:
             try:
-                db.session.query(Fabricantes).filter(Fabricantes.ID_FABR == idfabr).update({
-                    "ID_FABR": idfabr, "NOMEFABR": nomefabr})
+                db.session.query(Fabricantes).filter(Fabricantes.NOMEFABR == nomefabr_old).update(
+                    {"NOMEFABR": nomefabr})
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()

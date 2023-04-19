@@ -394,26 +394,21 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
     def entrada(self):
         aba = self.tabWidget.currentIndex()
         if aba == 0:        # ! ENTRADA DE PRODUTOS
-            row = self.tw_prod.currentRow()
-            if row == -1:
+            codint = self.tw_prod.selectionModel().selectedRows(column=0)
+            codfabr = self.tw_prod.selectionModel().selectedRows(column=1)
+            descprod = self.tw_prod.selectionModel().selectedRows(column=2)
+            saldo = self.tw_prod.selectionModel().selectedRows(column=4)
+            if len(codint) <= 0:
                 self.show_mensagem(
                     '>> Favor selecionar um item para efetuar a entrada!')
                 return
-            registro = QTableWidgetItem.text(self.tw_prod.item(row, 1))
-            df, conn = self.conectar("ESTOQUE")
-            df1 = df.query('`COD_FABR` == @registro')
-            conn.close()
-            for x in df1.values:
-                lst_item = x
             self.janEntrProd = Jan_Entr_Prod()
-            self.indice = lst_item[0]
-            self.janEntrProd.cp_codint.setText(lst_item[0])
-            self.janEntrProd.cp_codfabr.setText(lst_item[1])
-            self.janEntrProd.cp_descprod.setText(lst_item[2])
-            self.janEntrProd.cp_saldo.setText(str(lst_item[4]))
+            self.janEntrProd.cp_codint.setText(codint[0].data())
+            self.janEntrProd.cp_codfabr.setText(codfabr[0].data())
+            self.janEntrProd.cp_descprod.setText(descprod[0].data())
+            self.janEntrProd.cp_saldo.setText(saldo[0].data())
             self.pb_entrada.setEnabled(False)
             self.janEntrProd.show()
-            self.dados_prod()
             self.show_mensagem('>> Entrada de produtos efetuada com sucesso!')
 
     def reindex(self):

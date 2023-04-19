@@ -69,39 +69,12 @@ class Jan_Entr_Prod(QWidget, Ui_wind_entr_prod):
             window.show_mensagem(
                 '>> Data e/ou Quantidade não podem ser vazios!')
             return
-        registro = window.indice
-        df, conn = window.conectar("ESTOQUE")
-        df1 = df.query('`PROD_ID` == @registro')
-
-        saldo = df.loc[df1.index, 'SALDO']
-        saldo = saldo + float(self.le_quant.text())
-        df.loc[df1.index, 'SALDO'] = saldo
-        df.to_sql('ESTOQUE', conn, if_exists="replace", index=False)
-        conn.commit()
-        conn.close()
-
-        data = pd.to_datetime(pd.Series(data), dayfirst=True)
-        dtForm_usa = data.dt.strftime('%Y-%m-%d')
-        dtForm_br = data.dt.strftime('%d-%m-%Y')
-
-        data_usa = dtForm_usa.values
-        data_br = dtForm_br.values
-
-        for x in df1.values:
-            lista = x
-        lst_nova = []
-        lst_nova.append(data_usa[0])
-        lst_nova.append(float(quantidade))
-        lst_nova.append(lista[1])
-        lst_nova.append(lista[2])
-        lst_nova.append(lista[3])
-        df, conn = window.conectar("ENTRADAS")
-        df.loc[len(df)] = lst_nova
-        df.to_sql('ENTRADAS', conn, if_exists="replace", index=False)
-        conn.commit()
-        conn.close()
-        window.dados_entradas()
-        window.dados_prod()
+        saldo = float(self.cp_saldo.text())
+        saldo = saldo + float(quantidade)
+        idprod = EstoqueRepo.my_select_one(self, **{"COD_FABR": self.cp_codfabr.text()})
+        EntradasRepo.my_insert(self, indata=data, inquant=saldo, inidprod=idprod.ID_PROD)
+        window.carrega_dados("ENTRADAS", window.tw_entradas)
+        window.carrega_dados("ESTOQUE", window.tw_prod)
         window.show_mensagem('>> Entrada de produto efetuada com sucesso')
         self.close_jan_entrprod()
 
@@ -409,7 +382,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.janEntrProd.cp_saldo.setText(saldo[0].data())
             self.pb_entrada.setEnabled(False)
             self.janEntrProd.show()
-            self.show_mensagem('>> Entrada de produtos efetuada com sucesso!')
 
     def reindex(self):
         self.show_mensagem('')

@@ -1,5 +1,5 @@
 from infra.configs.connection import DBConnectionHandler
-from infra.entities.estoque import Entradas, Estoque, Fabricantes
+from infra.entities.estoque import Entradas, Estoque
 from sqlalchemy.orm.exc import NoResultFound
 
 
@@ -36,7 +36,9 @@ class EntradasRepo:
     def my_insert(self, indata, inquant, inidprod):
         with DBConnectionHandler() as db:
             try:
-                data_insert = Entradas(IN_DATA=indata, IN_QUANT=inquant, IN_IDPROD=inidprod)
+                data_insert = Entradas(IN_DATA=indata,
+                                       IN_QUANT=inquant,
+                                       IN_IDPROD=inidprod)
                 db.session.add(data_insert)
                 db.session.commit()
             except Exception as exception:
@@ -57,7 +59,9 @@ class EntradasRepo:
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Entradas).filter(Entradas.IN_IDPROD == inidprod).update({
-                    "IN_DATA": indata, "IN_QUANT": inquant, "IN_IDPROD": inidprod})
+                    "IN_DATA": indata,
+                    "IN_QUANT": inquant,
+                    "IN_IDPROD": inidprod})
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()

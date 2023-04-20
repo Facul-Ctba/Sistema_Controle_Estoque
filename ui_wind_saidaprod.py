@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'wind_entraprod.ui'
+## Form generated from reading UI file 'wind_saidaprod.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -19,17 +19,17 @@ from PySide6.QtWidgets import (QApplication, QFormLayout, QFrame, QHBoxLayout,
     QLabel, QLineEdit, QPushButton, QSizePolicy,
     QVBoxLayout, QWidget)
 
-class Ui_wind_entr_prod(object):
-    def setupUi(self, wind_entr_prod):
-        if not wind_entr_prod.objectName():
-            wind_entr_prod.setObjectName(u"wind_entr_prod")
-        wind_entr_prod.resize(827, 364)
-        wind_entr_prod.setMinimumSize(QSize(827, 0))
-        wind_entr_prod.setMaximumSize(QSize(827, 500))
-        self.verticalLayout = QVBoxLayout(wind_entr_prod)
+class Ui_wind_saida_prod(object):
+    def setupUi(self, wind_saida_prod):
+        if not wind_saida_prod.objectName():
+            wind_saida_prod.setObjectName(u"wind_saida_prod")
+        wind_saida_prod.resize(827, 393)
+        wind_saida_prod.setMinimumSize(QSize(827, 0))
+        wind_saida_prod.setMaximumSize(QSize(827, 500))
+        self.verticalLayout = QVBoxLayout(wind_saida_prod)
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.fr_top = QFrame(wind_entr_prod)
+        self.fr_top = QFrame(wind_saida_prod)
         self.fr_top.setObjectName(u"fr_top")
         self.fr_top.setMinimumSize(QSize(0, 200))
         self.fr_top.setMaximumSize(QSize(16777215, 200))
@@ -102,7 +102,7 @@ class Ui_wind_entr_prod(object):
 
         self.verticalLayout.addWidget(self.fr_top, 0, Qt.AlignVCenter)
 
-        self.frame = QFrame(wind_entr_prod)
+        self.frame = QFrame(wind_saida_prod)
         self.frame.setObjectName(u"frame")
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
@@ -124,16 +124,27 @@ class Ui_wind_entr_prod(object):
 
         self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.lb_quant)
 
+        self.lb_destino = QLabel(self.frame)
+        self.lb_destino.setObjectName(u"lb_destino")
+
+        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.lb_destino)
+
         self.le_quant = QLineEdit(self.frame)
         self.le_quant.setObjectName(u"le_quant")
         self.le_quant.setStyleSheet(u"color: rgb(255, 255, 255);")
 
         self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.le_quant)
 
+        self.le_destino = QLineEdit(self.frame)
+        self.le_destino.setObjectName(u"le_destino")
+        self.le_destino.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.le_destino)
+
 
         self.verticalLayout.addWidget(self.frame)
 
-        self.fr_bot = QFrame(wind_entr_prod)
+        self.fr_bot = QFrame(wind_saida_prod)
         self.fr_bot.setObjectName(u"fr_bot")
         self.fr_bot.setFrameShape(QFrame.StyledPanel)
         self.fr_bot.setFrameShadow(QFrame.Raised)
@@ -169,26 +180,27 @@ class Ui_wind_entr_prod(object):
         self.verticalLayout.addWidget(self.fr_bot, 0, Qt.AlignTop)
 
 
-        self.retranslateUi(wind_entr_prod)
+        self.retranslateUi(wind_saida_prod)
 
-        QMetaObject.connectSlotsByName(wind_entr_prod)
+        QMetaObject.connectSlotsByName(wind_saida_prod)
     # setupUi
 
-    def retranslateUi(self, wind_entr_prod):
-        wind_entr_prod.setWindowTitle(QCoreApplication.translate("wind_entr_prod", u"Entrada de Produtos no Estoque", None))
-        self.lb_codint.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">C\u00f3digo Interno</p></body></html>", None))
-        self.lb_codforn.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">C\u00f3digo Fabricante</p></body></html>", None))
-        self.lb_descprod.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">Descri\u00e7\u00e3o do Produto</p></body></html>", None))
-        self.lb_forn.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">Saldo</p></body></html>", None))
-        self.cp_codint.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))
-        self.cp_codfabr.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))
-        self.cp_descprod.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))
-        self.cp_saldo.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))
-        self.lb_data.setText(QCoreApplication.translate("wind_entr_prod", u"Data", None))
-        self.le_data.setPlaceholderText(QCoreApplication.translate("wind_entr_prod", u"dd/mm/aaaa", None))
-        self.lb_quant.setText(QCoreApplication.translate("wind_entr_prod", u"Quantidade", None))
-        self.le_quant.setPlaceholderText(QCoreApplication.translate("wind_entr_prod", u"0,0", None))
-        self.pb_confirma_entr.setText(QCoreApplication.translate("wind_entr_prod", u"Confirmar", None))
-        self.pb_cancela_entr.setText(QCoreApplication.translate("wind_entr_prod", u"Cancelar", None))
+    def retranslateUi(self, wind_saida_prod):
+        wind_saida_prod.setWindowTitle(QCoreApplication.translate("wind_saida_prod", u"Sa\u00edda de Produtos do Estoque", None))
+        self.lb_codint.setText(QCoreApplication.translate("wind_saida_prod", u"<html><head/><body><p align=\"right\">C\u00f3digo Interno</p></body></html>", None))
+        self.lb_codforn.setText(QCoreApplication.translate("wind_saida_prod", u"<html><head/><body><p align=\"right\">C\u00f3digo Fabricante</p></body></html>", None))
+        self.lb_descprod.setText(QCoreApplication.translate("wind_saida_prod", u"<html><head/><body><p align=\"right\">Descri\u00e7\u00e3o do Produto</p></body></html>", None))
+        self.lb_forn.setText(QCoreApplication.translate("wind_saida_prod", u"<html><head/><body><p align=\"right\">Saldo</p></body></html>", None))
+        self.cp_codint.setText(QCoreApplication.translate("wind_saida_prod", u"TextLabel", None))
+        self.cp_codfabr.setText(QCoreApplication.translate("wind_saida_prod", u"TextLabel", None))
+        self.cp_descprod.setText(QCoreApplication.translate("wind_saida_prod", u"TextLabel", None))
+        self.cp_saldo.setText(QCoreApplication.translate("wind_saida_prod", u"TextLabel", None))
+        self.lb_data.setText(QCoreApplication.translate("wind_saida_prod", u"Data", None))
+        self.le_data.setPlaceholderText(QCoreApplication.translate("wind_saida_prod", u"dd/mm/aaaa", None))
+        self.lb_quant.setText(QCoreApplication.translate("wind_saida_prod", u"Quantidade", None))
+        self.lb_destino.setText(QCoreApplication.translate("wind_saida_prod", u"Destino", None))
+        self.le_quant.setPlaceholderText(QCoreApplication.translate("wind_saida_prod", u"0,0", None))
+        self.pb_confirma_entr.setText(QCoreApplication.translate("wind_saida_prod", u"Confirmar", None))
+        self.pb_cancela_entr.setText(QCoreApplication.translate("wind_saida_prod", u"Cancelar", None))
     # retranslateUi
 

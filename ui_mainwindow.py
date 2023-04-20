@@ -418,13 +418,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addWidget(self.pb_entrada)
 
-        self.pb_reindex = QPushButton(self.fr_comm_ctrl)
-        self.pb_reindex.setObjectName(u"pb_reindex")
-        self.pb_reindex.setMinimumSize(QSize(150, 30))
-        self.pb_reindex.setMaximumSize(QSize(16777215, 30))
-        self.pb_reindex.setFont(font1)
-        self.pb_reindex.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_reindex.setStyleSheet(u"QPushButton:hover{\n"
+        self.pb_saida = QPushButton(self.fr_comm_ctrl)
+        self.pb_saida.setObjectName(u"pb_saida")
+        self.pb_saida.setMinimumSize(QSize(150, 30))
+        self.pb_saida.setMaximumSize(QSize(16777215, 30))
+        self.pb_saida.setFont(font1)
+        self.pb_saida.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_saida.setStyleSheet(u"QPushButton:hover{\n"
 "	background-color: rgb(0, 0, 255);	\n"
 "	color: rgb(255, 255, 255);\n"
 "	border-radius: 10px;\n"
@@ -433,7 +433,7 @@ class Ui_MainWindow(object):
 "	border-radius: 10px;\n"
 "}")
 
-        self.horizontalLayout_5.addWidget(self.pb_reindex)
+        self.horizontalLayout_5.addWidget(self.pb_saida)
 
         self.rb_filtro = QRadioButton(self.fr_comm_ctrl)
         self.rb_filtro.setObjectName(u"rb_filtro")
@@ -464,7 +464,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_7.setSpacing(3)
         self.verticalLayout_7.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
-        self.verticalLayout_7.setContentsMargins(0, -1, 0, 9)
+        self.verticalLayout_7.setContentsMargins(0, -1, 9, 9)
         self.tw_prod = QTableView(self.tab_prod)
         self.tw_prod.setObjectName(u"tw_prod")
         sizePolicy3.setHeightForWidth(self.tw_prod.sizePolicy().hasHeightForWidth())
@@ -533,23 +533,6 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.horizontalLayout_6.setContentsMargins(10, 5, 10, 10)
-        self.pb_entr_add = QPushButton(self.fr_entr_cabec)
-        self.pb_entr_add.setObjectName(u"pb_entr_add")
-        self.pb_entr_add.setMinimumSize(QSize(150, 30))
-        self.pb_entr_add.setMaximumSize(QSize(16777215, 30))
-        self.pb_entr_add.setFont(font1)
-        self.pb_entr_add.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_entr_add.setStyleSheet(u"QPushButton:hover{\n"
-"	background-color: rgb(85, 255, 127);	\n"
-"	color: rgb(255, 0, 0);\n"
-"	border-radius: 10px;\n"
-"}\n"
-"QPushButton{\n"
-"	border-radius: 10px;\n"
-"}")
-
-        self.horizontalLayout_6.addWidget(self.pb_entr_add)
-
         self.pb_entr_excl = QPushButton(self.fr_entr_cabec)
         self.pb_entr_excl.setObjectName(u"pb_entr_excl")
         self.pb_entr_excl.setMinimumSize(QSize(150, 30))
@@ -636,10 +619,86 @@ class Ui_MainWindow(object):
         self.verticalLayout_11.setSpacing(3)
         self.verticalLayout_11.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
-        self.label_5 = QLabel(self.Saidas)
-        self.label_5.setObjectName(u"label_5")
+        self.fr_saida_cabec = QFrame(self.Saidas)
+        self.fr_saida_cabec.setObjectName(u"fr_saida_cabec")
+        self.fr_saida_cabec.setMinimumSize(QSize(0, 45))
+        self.fr_saida_cabec.setFrameShape(QFrame.StyledPanel)
+        self.fr_saida_cabec.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_7 = QHBoxLayout(self.fr_saida_cabec)
+        self.horizontalLayout_7.setSpacing(3)
+        self.horizontalLayout_7.setContentsMargins(5, 5, 5, 5)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.pb_entr_excl_2 = QPushButton(self.fr_saida_cabec)
+        self.pb_entr_excl_2.setObjectName(u"pb_entr_excl_2")
+        self.pb_entr_excl_2.setMinimumSize(QSize(150, 30))
+        self.pb_entr_excl_2.setMaximumSize(QSize(16777215, 30))
+        self.pb_entr_excl_2.setFont(font1)
+        self.pb_entr_excl_2.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_entr_excl_2.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(255, 0, 0);\n"
+"	color: rgb(255, 255, 255);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
 
-        self.verticalLayout_11.addWidget(self.label_5)
+        self.horizontalLayout_7.addWidget(self.pb_entr_excl_2)
+
+        self.pb_entr_alt_2 = QPushButton(self.fr_saida_cabec)
+        self.pb_entr_alt_2.setObjectName(u"pb_entr_alt_2")
+        self.pb_entr_alt_2.setMinimumSize(QSize(150, 30))
+        self.pb_entr_alt_2.setMaximumSize(QSize(16777215, 30))
+        self.pb_entr_alt_2.setFont(font1)
+        self.pb_entr_alt_2.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_entr_alt_2.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(255, 255, 0);\n"
+"	color: rgb(0, 0, 0);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
+
+        self.horizontalLayout_7.addWidget(self.pb_entr_alt_2)
+
+        self.pb_entr_pesq_2 = QPushButton(self.fr_saida_cabec)
+        self.pb_entr_pesq_2.setObjectName(u"pb_entr_pesq_2")
+        self.pb_entr_pesq_2.setMinimumSize(QSize(150, 30))
+        self.pb_entr_pesq_2.setMaximumSize(QSize(16777215, 30))
+        self.pb_entr_pesq_2.setFont(font1)
+        self.pb_entr_pesq_2.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_entr_pesq_2.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(0, 153, 255);\n"
+"	color: rgb(255, 255, 255);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
+
+        self.horizontalLayout_7.addWidget(self.pb_entr_pesq_2)
+
+        self.horizontalSpacer_4 = QSpacerItem(588, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_4)
+
+
+        self.verticalLayout_11.addWidget(self.fr_saida_cabec)
+
+        self.tw_saidas = QTableView(self.Saidas)
+        self.tw_saidas.setObjectName(u"tw_saidas")
+        self.tw_saidas.setFont(font1)
+        self.tw_saidas.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
+        self.tw_saidas.setStyleSheet(u"background-color: rgb(86, 101, 115);")
+        self.tw_saidas.setFrameShape(QFrame.WinPanel)
+        self.tw_saidas.setLineWidth(2)
+        self.tw_saidas.setAlternatingRowColors(True)
+        self.tw_saidas.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_saidas.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tw_saidas.horizontalHeader().setStretchLastSection(True)
+
+        self.verticalLayout_11.addWidget(self.tw_saidas)
 
         self.sw_paginas.addWidget(self.Saidas)
         self.PontoCompra = QWidget()
@@ -726,16 +785,17 @@ class Ui_MainWindow(object):
         self.pb_alterar.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_pesquisar.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.pb_entrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
-        self.pb_reindex.setText(QCoreApplication.translate("MainWindow", u"Re-indexar ID", None))
+        self.pb_saida.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
         self.rb_filtro.setText(QCoreApplication.translate("MainWindow", u"Ativar Filtro", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_prod), QCoreApplication.translate("MainWindow", u"Produtos", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_forn), QCoreApplication.translate("MainWindow", u"Fabricantes", None))
-        self.pb_entr_add.setText(QCoreApplication.translate("MainWindow", u"Adicionar", None))
         self.pb_entr_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_entr_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_entr_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.rb_entr_filtro.setText(QCoreApplication.translate("MainWindow", u"Ativar Filtro", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
+        self.pb_entr_excl_2.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
+        self.pb_entr_alt_2.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
+        self.pb_entr_pesq_2.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"Ponto de compra", None))
         self.lb_mensagens.setText(QCoreApplication.translate("MainWindow", u"Mensagens", None))
     # retranslateUi

@@ -1,20 +1,22 @@
 import sys
 from datetime import datetime
 
-import pandas as pd
 from PySide6 import QtCore
 from PySide6.QtCore import QAbstractTableModel, Qt
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QMainWindow,
-                               QTableWidgetItem, QWidget)
+                               QWidget)
 from qt_material import apply_stylesheet, list_themes
 
 from infra.repository.entradas_repo import EntradasRepo
 from infra.repository.estoque_repo import EstoqueRepo
 from infra.repository.fabricante_repo import FabricantesRepo
+from infra.repository.saidas_repo import SaidasRepo
+
 from ui_mainwindow import Ui_MainWindow
 from ui_wind_addforn import Ui_wind_add_forn
 from ui_wind_addprod import Ui_wind_add_prod
 from ui_wind_entraprod import Ui_wind_entr_prod
+from ui_wind_saidaprod import Ui_wind_saida_prod
 
 
 class TableModel(QAbstractTableModel):
@@ -72,7 +74,8 @@ class Jan_Entr_Prod(QWidget, Ui_wind_entr_prod):
         saldo = float(self.cp_saldo.text())
         saldo = saldo + float(quantidade)
         idprod = EstoqueRepo.my_select_one(self, **{"COD_FABR": self.cp_codfabr.text()})
-        EntradasRepo.my_insert(self, indata=data, inquant=saldo, inidprod=idprod.ID_PROD)
+        EntradasRepo.my_insert(self, indata=data, inquant=float(quantidade), inidprod=idprod.ID_PROD)
+        EstoqueRepo.my_updsaldo(self, codfabr=self.cp_codfabr.text(), saldo=saldo)
         window.carrega_dados("ENTRADAS", window.tw_entradas)
         window.carrega_dados("ESTOQUE", window.tw_prod)
         window.show_mensagem('>> Entrada de produto efetuada com sucesso')
@@ -80,6 +83,42 @@ class Jan_Entr_Prod(QWidget, Ui_wind_entr_prod):
 
     def close_jan_entrprod(self):
         window.pb_entrada.setEnabled(True)
+        self.close()
+
+
+class Jan_Saida_Prod(QWidget, Ui_wind_saida_prod):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        self.pb_confirma_entr.clicked.connect(self.confirma_saida_prod)
+        self.pb_cancela_entr.clicked.connect(window.show_mensagem(''))
+        self.pb_cancela_entr.clicked.connect(self.close_jan_saidaprod)
+
+    def confirma_saida_prod(self):
+        data = self.le_data.text()
+        quantidade = self.le_quant.text()
+        destino = self.le_destino.text()
+        if not data or not quantidade or not destino:
+            window.show_mensagem(
+                '>> Todos os campos devem ser preenchidos!')
+            return
+        saldo = float(self.cp_saldo.text())
+        if float(quantidade) > saldo:
+            window.show_mensagem('>> Quantidado de Saída maior que o Saldo não permitida!')
+            return
+        saldo = saldo - float(quantidade)
+        idprod = EstoqueRepo.my_select_one(self, **{"COD_FABR": self.cp_codfabr.text()})
+        SaidasRepo.my_insert(self, outdata=data, outquant=float(quantidade),
+                             outidprod=idprod.ID_PROD, outdestino=destino)
+        EstoqueRepo.my_updsaldo(self, codfabr=self.cp_codfabr.text(), saldo=saldo)
+        window.carrega_dados("SAIDAS", window.tw_saidas)
+        window.carrega_dados("ESTOQUE", window.tw_prod)
+        window.show_mensagem('>> Saída de produto efetuada com sucesso')
+        self.close_jan_saidaprod()
+
+    def close_jan_saidaprod(self):
+        window.pb_saida.setEnabled(True)
         self.close()
 
 
@@ -238,12 +277,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
         self.tw_prod.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tw_fornec.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
-
-        self.tw_entradas.setColumnWidth(0, 150)
-        self.tw_entradas.setColumnWidth(1, 150)
-        self.tw_entradas.setColumnWidth(2, 150)
-        self.tw_entradas.setColumnWidth(3, 300)
-
+        self.tw_entradas.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
+        self.tw_saidas.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tabWidget.setCurrentIndex(0)
 
         self.estilos()
@@ -256,6 +291,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
         self.carrega_dados("ENTRADAS", self.tw_entradas)
 
+        self.carrega_dados("SAIDAS", self.tw_saidas)
+
 # !=================== FUNÇÕES ============================
 
     def carrega_dados(self, tabela, tab_widget):
@@ -266,26 +303,38 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.model = TableModel(self.registros, columns=self.colunas)
             tab_widget.setModel(self.model)
             tab_widget.setColumnWidth(0, 150)
-            tab_widget.setColumnWidth(1, 300)
+            tab_widget.setColumnWidth(1, 400)
             tab_widget.setColumnWidth(2, 600)
-            tab_widget.setColumnWidth(3, 200)
-            tab_widget.setColumnWidth(4, 100)
+            tab_widget.setColumnWidth(3, 250)
+            tab_widget.setColumnWidth(4, 80)
         elif tabela == "FABRICANTES":
             self.registros = FabricantesRepo.my_select(self)
             self.colunas = ['Fabricante ID', 'Nome do Fabricante']
             self.model = TableModel(self.registros, columns=self.colunas)
             tab_widget.setModel(self.model)
             tab_widget.setColumnWidth(0, 150)
-            tab_widget.setColumnWidth(1, 700)
+            tab_widget.setColumnWidth(1, 500)
         elif tabela == "ENTRADAS":
             self.registros = EntradasRepo.my_select(self)
-            self.colunas = ['Data de Entrada', 'Quantidade', 'Código do Fabricante', 'Descrição do Produto']
+            self.colunas = ['Data Entrada', 'Quantidade', 'Código do Fabricante',
+                            'Descrição do Produto']
             self.model = TableModel(self.registros, columns=self.colunas)
             tab_widget.setModel(self.model)
-            tab_widget.setColumnWidth(0, 200)
-            tab_widget.setColumnWidth(1, 200)
-            tab_widget.setColumnWidth(2, 300)
-            tab_widget.setColumnWidth(3, 500)
+            tab_widget.setColumnWidth(0, 170)
+            tab_widget.setColumnWidth(1, 150)
+            tab_widget.setColumnWidth(2, 400)
+            tab_widget.setColumnWidth(3, 550)
+        elif tabela == "SAIDAS":
+            self.registros = SaidasRepo.my_select(self)
+            self.colunas = ['Data de Saída', 'Quantidade', 'Código do Fabricante',
+                            'Descrição do Produto', 'Destino do Produto']
+            self.model = TableModel(self.registros, columns=self.colunas)
+            tab_widget.setModel(self.model)
+            tab_widget.setColumnWidth(0, 150)
+            tab_widget.setColumnWidth(1, 150)
+            tab_widget.setColumnWidth(2, 350)
+            tab_widget.setColumnWidth(3, 600)
+            tab_widget.setColumnWidth(4, 150)
 
     def adicionar(self):
         self.show_mensagem('')
@@ -337,7 +386,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             nomefabr = self.tw_prod.selectionModel().selectedRows(column=3)
             if len(codint) <= 0:
                 self.show_mensagem(
-                    '>> Favor selecionar um item para exclusão!')
+                    '>> Favor selecionar um item para alteração!')
                 return
             self.codfabr_old = codfabr[0].data()
             self.reg_fabr = FabricantesRepo.my_select(self)
@@ -383,7 +432,27 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.pb_entrada.setEnabled(False)
             self.janEntrProd.show()
 
+    def saida(self):
+        aba = self.tabWidget.currentIndex()
+        if aba == 0:        # ! SAÍDA DE PRODUTOS
+            codint = self.tw_prod.selectionModel().selectedRows(column=0)
+            codfabr = self.tw_prod.selectionModel().selectedRows(column=1)
+            descprod = self.tw_prod.selectionModel().selectedRows(column=2)
+            saldo = self.tw_prod.selectionModel().selectedRows(column=4)
+            if len(codint) <= 0:
+                self.show_mensagem(
+                    '>> Favor selecionar um item para efetuar a saída!')
+                return
+            self.janSaidaProd = Jan_Saida_Prod()
+            self.janSaidaProd.cp_codint.setText(codint[0].data())
+            self.janSaidaProd.cp_codfabr.setText(codfabr[0].data())
+            self.janSaidaProd.cp_descprod.setText(descprod[0].data())
+            self.janSaidaProd.cp_saldo.setText(saldo[0].data())
+            self.pb_saida.setEnabled(False)
+            self.janSaidaProd.show()
+
     def reindex(self):
+        return
         self.show_mensagem('')
         aba = self.tabWidget.currentIndex()
         if aba == 0:
@@ -473,13 +542,16 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
     def slots(self):
         self.cb_temas.currentTextChanged.connect(self.muda_tema)
         self.pb_menu.clicked.connect(self.left_menu)
+
         self.pb_cadastros.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.Cadastros))
         self.pb_cadastros.clicked.connect(lambda: self.pagina('CADASTROS'))
         self.pb_entradas.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_entradas.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.Entradas))
         self.pb_entradas.clicked.connect(lambda: self.pagina('ENTRADAS'))
+        self.pb_saidas.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_saidas.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.Saidas))
         self.pb_saidas.clicked.connect(lambda: self.pagina('SAÍDAS'))
+        self.pb_compra.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_compra.clicked.connect(lambda: self.sw_paginas.setCurrentWidget(self.PontoCompra))
         self.pb_compra.clicked.connect(lambda: self.pagina('PONTO DE COMPRAS'))
 
@@ -491,8 +563,11 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.pb_alterar.clicked.connect(lambda: self.alterar())
         self.pb_entrada.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_entrada.clicked.connect(lambda: self.entrada())
-        self.pb_reindex.clicked.connect(lambda: self.show_mensagem(''))
-        self.pb_reindex.clicked.connect(lambda: self.reindex())
+        self.pb_saida.clicked.connect(lambda: self.show_mensagem(''))
+        self.pb_saida.clicked.connect(lambda: self.saida())
+
+        # self.pb_reindex.clicked.connect(lambda: self.show_mensagem(''))
+        # self.pb_reindex.clicked.connect(lambda: self.reindex())
 
         self.rb_filtro.toggled.connect(self.Ativa_filtro)
         self.rb_entr_filtro.toggled.connect(self.Ativa_entr_filtro)

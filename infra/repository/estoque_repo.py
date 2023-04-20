@@ -65,3 +65,13 @@ class EstoqueRepo:
             except Exception as exception:
                 db.session.rollback()
                 raise exception
+
+    def my_updsaldo(self, codfabr, saldo):
+        with DBConnectionHandler() as db:
+            try:
+                db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr).update({
+                    "SALDO": saldo})
+                db.session.commit()
+            except Exception as exception:
+                db.session.rollback()
+                raise exception

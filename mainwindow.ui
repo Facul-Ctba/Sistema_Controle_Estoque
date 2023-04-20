@@ -897,7 +897,7 @@ QPushButton{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pb_reindex">
+                     <widget class="QPushButton" name="pb_saida">
                       <property name="minimumSize">
                        <size>
                         <width>150</width>
@@ -930,7 +930,7 @@ QPushButton{
 }</string>
                       </property>
                       <property name="text">
-                       <string>Re-indexar ID</string>
+                       <string>Saídas</string>
                       </property>
                      </widget>
                     </item>
@@ -1001,7 +1001,7 @@ QPushButton{
                       <number>0</number>
                      </property>
                      <property name="rightMargin">
-                      <number>0</number>
+                      <number>9</number>
                      </property>
                      <property name="bottomMargin">
                       <number>9</number>
@@ -1186,44 +1186,6 @@ QPushButton{
                      <number>10</number>
                     </property>
                     <item>
-                     <widget class="QPushButton" name="pb_entr_add">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(85, 255, 127);	
-	color: rgb(255, 0, 0);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Adicionar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <widget class="QPushButton" name="pb_entr_excl">
                       <property name="minimumSize">
                        <size>
@@ -1405,10 +1367,182 @@ QPushButton{
                <widget class="QWidget" name="Saidas">
                 <layout class="QVBoxLayout" name="verticalLayout_11">
                  <item>
-                  <widget class="QLabel" name="label_5">
-                   <property name="text">
-                    <string>Saídas</string>
+                  <widget class="QFrame" name="fr_saida_cabec">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>45</height>
+                    </size>
                    </property>
+                   <property name="frameShape">
+                    <enum>QFrame::StyledPanel</enum>
+                   </property>
+                   <property name="frameShadow">
+                    <enum>QFrame::Raised</enum>
+                   </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout_7">
+                    <item>
+                     <widget class="QPushButton" name="pb_entr_excl_2">
+                      <property name="minimumSize">
+                       <size>
+                        <width>150</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>14</pointsize>
+                       </font>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(255, 0, 0);
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Excluir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_entr_alt_2">
+                      <property name="minimumSize">
+                       <size>
+                        <width>150</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>14</pointsize>
+                       </font>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(255, 255, 0);
+	color: rgb(0, 0, 0);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Alterar</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_entr_pesq_2">
+                      <property name="minimumSize">
+                       <size>
+                        <width>150</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="font">
+                       <font>
+                        <family>Arial</family>
+                        <pointsize>14</pointsize>
+                       </font>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(0, 153, 255);
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Pesquisar</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_4">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>588</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QTableView" name="tw_saidas">
+                   <property name="font">
+                    <font>
+                     <family>Arial</family>
+                     <pointsize>14</pointsize>
+                    </font>
+                   </property>
+                   <property name="cursor" stdset="0">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: rgb(86, 101, 115);</string>
+                   </property>
+                   <property name="frameShape">
+                    <enum>QFrame::WinPanel</enum>
+                   </property>
+                   <property name="lineWidth">
+                    <number>2</number>
+                   </property>
+                   <property name="alternatingRowColors">
+                    <bool>true</bool>
+                   </property>
+                   <property name="selectionMode">
+                    <enum>QAbstractItemView::SingleSelection</enum>
+                   </property>
+                   <property name="selectionBehavior">
+                    <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                   <attribute name="horizontalHeaderStretchLastSection">
+                    <bool>true</bool>
+                   </attribute>
                   </widget>
                  </item>
                 </layout>

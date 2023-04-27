@@ -16,18 +16,18 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QLayout,
-    QMainWindow, QPushButton, QRadioButton, QSizePolicy,
-    QSpacerItem, QStackedWidget, QTabWidget, QTableView,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
+    QComboBox, QFrame, QHBoxLayout, QHeaderView,
+    QLabel, QLayout, QMainWindow, QPushButton,
+    QRadioButton, QSizePolicy, QSpacerItem, QStackedWidget,
+    QTabWidget, QTableView, QVBoxLayout, QWidget)
 import rc_icons
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1268, 750)
+        MainWindow.resize(1321, 750)
         font = QFont()
         font.setPointSize(14)
         MainWindow.setFont(font)
@@ -128,26 +128,81 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_8.addWidget(self.pb_saidas)
 
-        self.pb_compra = QPushButton(self.fr_funcoes)
-        self.pb_compra.setObjectName(u"pb_compra")
-        self.pb_compra.setMinimumSize(QSize(0, 56))
-        self.pb_compra.setFont(font3)
-        self.pb_compra.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_compra.setStyleSheet(u"QPushButton:hover{\n"
+        self.pb_compras = QPushButton(self.fr_funcoes)
+        self.pb_compras.setObjectName(u"pb_compras")
+        self.pb_compras.setMinimumSize(QSize(0, 56))
+        self.pb_compras.setFont(font3)
+        self.pb_compras.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_compras.setStyleSheet(u"QPushButton:hover{\n"
 "	background-color: rgb(0, 0, 255);	\n"
 "	color: rgb(255, 255, 255);\n"
 "	border-radius: 20px\n"
 "}")
         icon3 = QIcon()
         icon3.addFile(u"Icons/icons8-choose-48.png", QSize(), QIcon.Normal, QIcon.Off)
-        self.pb_compra.setIcon(icon3)
-        self.pb_compra.setIconSize(QSize(48, 48))
+        self.pb_compras.setIcon(icon3)
+        self.pb_compras.setIconSize(QSize(48, 48))
 
-        self.verticalLayout_8.addWidget(self.pb_compra)
+        self.verticalLayout_8.addWidget(self.pb_compras)
 
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_8.addItem(self.verticalSpacer)
+
+        self.fr_classif = QFrame(self.fr_funcoes)
+        self.fr_classif.setObjectName(u"fr_classif")
+        self.fr_classif.setMinimumSize(QSize(0, 300))
+        self.fr_classif.setFrameShape(QFrame.StyledPanel)
+        self.fr_classif.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_13 = QVBoxLayout(self.fr_classif)
+        self.verticalLayout_13.setSpacing(3)
+        self.verticalLayout_13.setContentsMargins(5, 5, 5, 5)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.cb_classif = QCheckBox(self.fr_classif)
+        self.cb_classif.setObjectName(u"cb_classif")
+        self.cb_classif.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_13.addWidget(self.cb_classif)
+
+        self.cb_decresc = QCheckBox(self.fr_classif)
+        self.cb_decresc.setObjectName(u"cb_decresc")
+        self.cb_decresc.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_13.addWidget(self.cb_decresc)
+
+        self.rb_codint = QRadioButton(self.fr_classif)
+        self.rb_codint.setObjectName(u"rb_codint")
+        self.rb_codint.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_13.addWidget(self.rb_codint)
+
+        self.rb_codfabr = QRadioButton(self.fr_classif)
+        self.rb_codfabr.setObjectName(u"rb_codfabr")
+        self.rb_codfabr.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_13.addWidget(self.rb_codfabr)
+
+        self.rb_prod = QRadioButton(self.fr_classif)
+        self.rb_prod.setObjectName(u"rb_prod")
+        self.rb_prod.setCursor(QCursor(Qt.PointingHandCursor))
+        self.rb_prod.setChecked(True)
+
+        self.verticalLayout_13.addWidget(self.rb_prod)
+
+        self.rb_fabr = QRadioButton(self.fr_classif)
+        self.rb_fabr.setObjectName(u"rb_fabr")
+        self.rb_fabr.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_13.addWidget(self.rb_fabr)
+
+        self.rb_saldo = QRadioButton(self.fr_classif)
+        self.rb_saldo.setObjectName(u"rb_saldo")
+        self.rb_saldo.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_13.addWidget(self.rb_saldo)
+
+
+        self.verticalLayout_8.addWidget(self.fr_classif)
 
 
         self.verticalLayout.addWidget(self.fr_funcoes)
@@ -435,12 +490,22 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addWidget(self.pb_saida)
 
-        self.rb_filtro = QRadioButton(self.fr_comm_ctrl)
-        self.rb_filtro.setObjectName(u"rb_filtro")
-        self.rb_filtro.setCursor(QCursor(Qt.PointingHandCursor))
-        self.rb_filtro.setLayoutDirection(Qt.RightToLeft)
+        self.pb_compra = QPushButton(self.fr_comm_ctrl)
+        self.pb_compra.setObjectName(u"pb_compra")
+        self.pb_compra.setMinimumSize(QSize(170, 30))
+        self.pb_compra.setMaximumSize(QSize(16777215, 30))
+        self.pb_compra.setFont(font1)
+        self.pb_compra.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_compra.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(254, 151, 39);	\n"
+"	color: rgb(255, 255, 255);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
 
-        self.horizontalLayout_5.addWidget(self.rb_filtro)
+        self.horizontalLayout_5.addWidget(self.pb_compra)
 
         self.horizontalSpacer_2 = QSpacerItem(118, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -473,10 +538,11 @@ class Ui_MainWindow(object):
         self.tw_prod.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
         self.tw_prod.setFrameShape(QFrame.WinPanel)
         self.tw_prod.setLineWidth(2)
+        self.tw_prod.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
         self.tw_prod.setAlternatingRowColors(True)
         self.tw_prod.setSelectionMode(QAbstractItemView.SingleSelection)
         self.tw_prod.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.tw_prod.setSortingEnabled(True)
+        self.tw_prod.setSortingEnabled(False)
         self.tw_prod.horizontalHeader().setStretchLastSection(True)
         self.tw_prod.verticalHeader().setStretchLastSection(False)
 
@@ -502,7 +568,7 @@ class Ui_MainWindow(object):
         self.tw_fornec.setAlternatingRowColors(True)
         self.tw_fornec.setSelectionMode(QAbstractItemView.SingleSelection)
         self.tw_fornec.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.tw_fornec.setSortingEnabled(True)
+        self.tw_fornec.setSortingEnabled(False)
         self.tw_fornec.horizontalHeader().setStretchLastSection(True)
         self.tw_fornec.verticalHeader().setStretchLastSection(False)
 
@@ -525,7 +591,6 @@ class Ui_MainWindow(object):
         sizePolicy4.setHeightForWidth(self.fr_entr_cabec.sizePolicy().hasHeightForWidth())
         self.fr_entr_cabec.setSizePolicy(sizePolicy4)
         self.fr_entr_cabec.setMinimumSize(QSize(0, 45))
-        self.fr_entr_cabec.setMaximumSize(QSize(16777215, 16777215))
         self.fr_entr_cabec.setFrameShape(QFrame.StyledPanel)
         self.fr_entr_cabec.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_6 = QHBoxLayout(self.fr_entr_cabec)
@@ -584,13 +649,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_6.addWidget(self.pb_entr_pesq)
 
-        self.rb_entr_filtro = QRadioButton(self.fr_entr_cabec)
-        self.rb_entr_filtro.setObjectName(u"rb_entr_filtro")
-        self.rb_entr_filtro.setCursor(QCursor(Qt.PointingHandCursor))
-        self.rb_entr_filtro.setLayoutDirection(Qt.RightToLeft)
-
-        self.horizontalLayout_6.addWidget(self.rb_entr_filtro)
-
         self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_6.addItem(self.horizontalSpacer_3)
@@ -616,25 +674,29 @@ class Ui_MainWindow(object):
         self.Saidas = QWidget()
         self.Saidas.setObjectName(u"Saidas")
         self.verticalLayout_11 = QVBoxLayout(self.Saidas)
-        self.verticalLayout_11.setSpacing(3)
+        self.verticalLayout_11.setSpacing(10)
         self.verticalLayout_11.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_11.setContentsMargins(-1, 10, -1, 0)
         self.fr_saida_cabec = QFrame(self.Saidas)
         self.fr_saida_cabec.setObjectName(u"fr_saida_cabec")
+        sizePolicy4.setHeightForWidth(self.fr_saida_cabec.sizePolicy().hasHeightForWidth())
+        self.fr_saida_cabec.setSizePolicy(sizePolicy4)
         self.fr_saida_cabec.setMinimumSize(QSize(0, 45))
         self.fr_saida_cabec.setFrameShape(QFrame.StyledPanel)
         self.fr_saida_cabec.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.fr_saida_cabec)
-        self.horizontalLayout_7.setSpacing(3)
+        self.horizontalLayout_7.setSpacing(15)
         self.horizontalLayout_7.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.pb_entr_excl_2 = QPushButton(self.fr_saida_cabec)
-        self.pb_entr_excl_2.setObjectName(u"pb_entr_excl_2")
-        self.pb_entr_excl_2.setMinimumSize(QSize(150, 30))
-        self.pb_entr_excl_2.setMaximumSize(QSize(16777215, 30))
-        self.pb_entr_excl_2.setFont(font1)
-        self.pb_entr_excl_2.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_entr_excl_2.setStyleSheet(u"QPushButton:hover{\n"
+        self.horizontalLayout_7.setContentsMargins(10, 5, 10, 10)
+        self.pb_saida_excl = QPushButton(self.fr_saida_cabec)
+        self.pb_saida_excl.setObjectName(u"pb_saida_excl")
+        self.pb_saida_excl.setMinimumSize(QSize(150, 30))
+        self.pb_saida_excl.setMaximumSize(QSize(16777215, 30))
+        self.pb_saida_excl.setFont(font1)
+        self.pb_saida_excl.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_saida_excl.setStyleSheet(u"QPushButton:hover{\n"
 "	background-color: rgb(255, 0, 0);\n"
 "	color: rgb(255, 255, 255);\n"
 "	border-radius: 10px;\n"
@@ -643,15 +705,15 @@ class Ui_MainWindow(object):
 "	border-radius: 10px;\n"
 "}")
 
-        self.horizontalLayout_7.addWidget(self.pb_entr_excl_2)
+        self.horizontalLayout_7.addWidget(self.pb_saida_excl)
 
-        self.pb_entr_alt_2 = QPushButton(self.fr_saida_cabec)
-        self.pb_entr_alt_2.setObjectName(u"pb_entr_alt_2")
-        self.pb_entr_alt_2.setMinimumSize(QSize(150, 30))
-        self.pb_entr_alt_2.setMaximumSize(QSize(16777215, 30))
-        self.pb_entr_alt_2.setFont(font1)
-        self.pb_entr_alt_2.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_entr_alt_2.setStyleSheet(u"QPushButton:hover{\n"
+        self.pb_saida_alt = QPushButton(self.fr_saida_cabec)
+        self.pb_saida_alt.setObjectName(u"pb_saida_alt")
+        self.pb_saida_alt.setMinimumSize(QSize(150, 30))
+        self.pb_saida_alt.setMaximumSize(QSize(16777215, 30))
+        self.pb_saida_alt.setFont(font1)
+        self.pb_saida_alt.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_saida_alt.setStyleSheet(u"QPushButton:hover{\n"
 "	background-color: rgb(255, 255, 0);\n"
 "	color: rgb(0, 0, 0);\n"
 "	border-radius: 10px;\n"
@@ -660,15 +722,15 @@ class Ui_MainWindow(object):
 "	border-radius: 10px;\n"
 "}")
 
-        self.horizontalLayout_7.addWidget(self.pb_entr_alt_2)
+        self.horizontalLayout_7.addWidget(self.pb_saida_alt)
 
-        self.pb_entr_pesq_2 = QPushButton(self.fr_saida_cabec)
-        self.pb_entr_pesq_2.setObjectName(u"pb_entr_pesq_2")
-        self.pb_entr_pesq_2.setMinimumSize(QSize(150, 30))
-        self.pb_entr_pesq_2.setMaximumSize(QSize(16777215, 30))
-        self.pb_entr_pesq_2.setFont(font1)
-        self.pb_entr_pesq_2.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_entr_pesq_2.setStyleSheet(u"QPushButton:hover{\n"
+        self.pb_saida_pesq = QPushButton(self.fr_saida_cabec)
+        self.pb_saida_pesq.setObjectName(u"pb_saida_pesq")
+        self.pb_saida_pesq.setMinimumSize(QSize(150, 30))
+        self.pb_saida_pesq.setMaximumSize(QSize(16777215, 30))
+        self.pb_saida_pesq.setFont(font1)
+        self.pb_saida_pesq.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_saida_pesq.setStyleSheet(u"QPushButton:hover{\n"
 "	background-color: rgb(0, 153, 255);\n"
 "	color: rgb(255, 255, 255);\n"
 "	border-radius: 10px;\n"
@@ -677,7 +739,7 @@ class Ui_MainWindow(object):
 "	border-radius: 10px;\n"
 "}")
 
-        self.horizontalLayout_7.addWidget(self.pb_entr_pesq_2)
+        self.horizontalLayout_7.addWidget(self.pb_saida_pesq)
 
         self.horizontalSpacer_4 = QSpacerItem(588, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
@@ -704,13 +766,93 @@ class Ui_MainWindow(object):
         self.PontoCompra = QWidget()
         self.PontoCompra.setObjectName(u"PontoCompra")
         self.verticalLayout_12 = QVBoxLayout(self.PontoCompra)
-        self.verticalLayout_12.setSpacing(3)
+        self.verticalLayout_12.setSpacing(10)
         self.verticalLayout_12.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
-        self.label_6 = QLabel(self.PontoCompra)
-        self.label_6.setObjectName(u"label_6")
+        self.verticalLayout_12.setContentsMargins(-1, 10, -1, 0)
+        self.fr_compras_cabec = QFrame(self.PontoCompra)
+        self.fr_compras_cabec.setObjectName(u"fr_compras_cabec")
+        sizePolicy4.setHeightForWidth(self.fr_compras_cabec.sizePolicy().hasHeightForWidth())
+        self.fr_compras_cabec.setSizePolicy(sizePolicy4)
+        self.fr_compras_cabec.setMinimumSize(QSize(0, 45))
+        self.fr_compras_cabec.setFrameShape(QFrame.StyledPanel)
+        self.fr_compras_cabec.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_8 = QHBoxLayout(self.fr_compras_cabec)
+        self.horizontalLayout_8.setSpacing(15)
+        self.horizontalLayout_8.setContentsMargins(5, 5, 5, 5)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.horizontalLayout_8.setContentsMargins(10, 5, 10, 10)
+        self.pb_compras_excl = QPushButton(self.fr_compras_cabec)
+        self.pb_compras_excl.setObjectName(u"pb_compras_excl")
+        self.pb_compras_excl.setMinimumSize(QSize(150, 30))
+        self.pb_compras_excl.setMaximumSize(QSize(16777215, 30))
+        self.pb_compras_excl.setFont(font1)
+        self.pb_compras_excl.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_compras_excl.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(255, 0, 0);\n"
+"	color: rgb(255, 255, 255);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
 
-        self.verticalLayout_12.addWidget(self.label_6)
+        self.horizontalLayout_8.addWidget(self.pb_compras_excl)
+
+        self.pb_compras_alt = QPushButton(self.fr_compras_cabec)
+        self.pb_compras_alt.setObjectName(u"pb_compras_alt")
+        self.pb_compras_alt.setMinimumSize(QSize(150, 30))
+        self.pb_compras_alt.setMaximumSize(QSize(16777215, 30))
+        self.pb_compras_alt.setFont(font1)
+        self.pb_compras_alt.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_compras_alt.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(255, 255, 0);\n"
+"	color: rgb(0, 0, 0);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
+
+        self.horizontalLayout_8.addWidget(self.pb_compras_alt)
+
+        self.pb_compras_pesq = QPushButton(self.fr_compras_cabec)
+        self.pb_compras_pesq.setObjectName(u"pb_compras_pesq")
+        self.pb_compras_pesq.setMinimumSize(QSize(150, 30))
+        self.pb_compras_pesq.setMaximumSize(QSize(16777215, 30))
+        self.pb_compras_pesq.setFont(font1)
+        self.pb_compras_pesq.setCursor(QCursor(Qt.PointingHandCursor))
+        self.pb_compras_pesq.setStyleSheet(u"QPushButton:hover{\n"
+"	background-color: rgb(0, 153, 255);\n"
+"	color: rgb(255, 255, 255);\n"
+"	border-radius: 10px;\n"
+"}\n"
+"QPushButton{\n"
+"	border-radius: 10px;\n"
+"}")
+
+        self.horizontalLayout_8.addWidget(self.pb_compras_pesq)
+
+        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_8.addItem(self.horizontalSpacer_5)
+
+
+        self.verticalLayout_12.addWidget(self.fr_compras_cabec)
+
+        self.tw_compras = QTableView(self.PontoCompra)
+        self.tw_compras.setObjectName(u"tw_compras")
+        self.tw_compras.setFont(font1)
+        self.tw_compras.viewport().setProperty("cursor", QCursor(Qt.PointingHandCursor))
+        self.tw_compras.setStyleSheet(u"background-color: rgb(86, 101, 115);")
+        self.tw_compras.setFrameShape(QFrame.WinPanel)
+        self.tw_compras.setLineWidth(2)
+        self.tw_compras.setAlternatingRowColors(True)
+        self.tw_compras.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.tw_compras.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tw_compras.horizontalHeader().setStretchLastSection(True)
+
+        self.verticalLayout_12.addWidget(self.tw_compras)
 
         self.sw_paginas.addWidget(self.PontoCompra)
 
@@ -775,7 +917,14 @@ class Ui_MainWindow(object):
         self.pb_cadastros.setText(QCoreApplication.translate("MainWindow", u"Cadastros", None))
         self.pb_entradas.setText(QCoreApplication.translate("MainWindow", u"Entradas", None))
         self.pb_saidas.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
-        self.pb_compra.setText(QCoreApplication.translate("MainWindow", u"\u00c0 Comprar", None))
+        self.pb_compras.setText(QCoreApplication.translate("MainWindow", u"\u00c0 Comprar", None))
+        self.cb_classif.setText(QCoreApplication.translate("MainWindow", u"Classificar", None))
+        self.cb_decresc.setText(QCoreApplication.translate("MainWindow", u"Decrescente", None))
+        self.rb_codint.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Interno", None))
+        self.rb_codfabr.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Fabricante", None))
+        self.rb_prod.setText(QCoreApplication.translate("MainWindow", u"Descr. Produto", None))
+        self.rb_fabr.setText(QCoreApplication.translate("MainWindow", u"Fabricante", None))
+        self.rb_saldo.setText(QCoreApplication.translate("MainWindow", u"Saldo", None))
         self.pb_menu.setText(QCoreApplication.translate("MainWindow", u"  Menu", None))
         self.lb_logo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><img src=\":/Icons/Icons/Avitech_m.png\"/></p></body></html>", None))
         self.lb_titulo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:700;\">Sistema de Controle de Estoque</span></p></body></html>", None))
@@ -786,17 +935,18 @@ class Ui_MainWindow(object):
         self.pb_pesquisar.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.pb_entrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
         self.pb_saida.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
-        self.rb_filtro.setText(QCoreApplication.translate("MainWindow", u"Ativar Filtro", None))
+        self.pb_compra.setText(QCoreApplication.translate("MainWindow", u"Ponto de Compra", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_prod), QCoreApplication.translate("MainWindow", u"Produtos", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_forn), QCoreApplication.translate("MainWindow", u"Fabricantes", None))
         self.pb_entr_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_entr_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_entr_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
-        self.rb_entr_filtro.setText(QCoreApplication.translate("MainWindow", u"Ativar Filtro", None))
-        self.pb_entr_excl_2.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
-        self.pb_entr_alt_2.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
-        self.pb_entr_pesq_2.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Ponto de compra", None))
+        self.pb_saida_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
+        self.pb_saida_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
+        self.pb_saida_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
+        self.pb_compras_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
+        self.pb_compras_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
+        self.pb_compras_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.lb_mensagens.setText(QCoreApplication.translate("MainWindow", u"Mensagens", None))
     # retranslateUi
 

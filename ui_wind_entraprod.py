@@ -68,13 +68,13 @@ class Ui_wind_entr_prod(object):
 
         self.formLayout.setWidget(2, QFormLayout.LabelRole, self.lb_descprod)
 
-        self.lb_forn = QLabel(self.fr_top)
-        self.lb_forn.setObjectName(u"lb_forn")
-        self.lb_forn.setMinimumSize(QSize(0, 30))
-        self.lb_forn.setMaximumSize(QSize(16777215, 30))
-        self.lb_forn.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.lb_saldo = QLabel(self.fr_top)
+        self.lb_saldo.setObjectName(u"lb_saldo")
+        self.lb_saldo.setMinimumSize(QSize(0, 30))
+        self.lb_saldo.setMaximumSize(QSize(16777215, 30))
+        self.lb_saldo.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.lb_forn)
+        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.lb_saldo)
 
         self.cp_codint = QLabel(self.fr_top)
         self.cp_codint.setObjectName(u"cp_codint")
@@ -179,7 +179,7 @@ class Ui_wind_entr_prod(object):
         self.lb_codint.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">C\u00f3digo Interno</p></body></html>", None))
         self.lb_codforn.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">C\u00f3digo Fabricante</p></body></html>", None))
         self.lb_descprod.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">Descri\u00e7\u00e3o do Produto</p></body></html>", None))
-        self.lb_forn.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">Saldo</p></body></html>", None))
+        self.lb_saldo.setText(QCoreApplication.translate("wind_entr_prod", u"<html><head/><body><p align=\"right\">Saldo</p></body></html>", None))
         self.cp_codint.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))
         self.cp_codfabr.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))
         self.cp_descprod.setText(QCoreApplication.translate("wind_entr_prod", u"TextLabel", None))

@@ -12,11 +12,12 @@ class Estoque(Base):
     PRODUTO = Column(String, nullable=False)
     ID_FABR = Column(Integer, ForeignKey("fabricantes.ID_FABR"))
     SALDO = Column(Float, nullable=False)
+    PC = Column(Integer)
     fabricante = relationship("Fabricantes", backref="estoque", lazy="subquery")
 
     def __repr__(self):
         return f'[{self.ID_PROD}, "{self.COD_INT}", "{self.COD_FABR}", \
-"{self.PRODUTO}", "{self.fabricante.NOMEFABR}", {self.SALDO}]'
+"{self.PRODUTO}", "{self.fabricante.NOMEFABR}", {self.SALDO}, {self.PC}]'
 
 
 class Fabricantes(Base):
@@ -54,3 +55,15 @@ class Saidas(Base):
 
     def __repr__(self):
         return f'["{self.OUT_DATA}", {self.OUT_QUANT}, "{self.estoque.COD_FABR}", "{self.OUT_DESTINO}"]'
+
+
+class Compras(Base):
+    __tablename__ = 'compras'
+
+    PC_ID = Column(Integer, primary_key=True)
+    PC_IDPROD = Column(Integer, ForeignKey("estoque.ID_PROD"))
+    PC_LIM_MIN = Column(Integer, nullable=False)
+    pc_codfabr_rs = relationship("Estoque", backref="compras", lazy="subquery")
+
+    def __repr__(self):
+        return f'[{self.PC_IDPROD}, "{self.estoque.COD_FABR}", {self.PC_LIM_MIN}"]'

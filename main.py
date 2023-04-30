@@ -2,7 +2,7 @@ import sys
 from datetime import datetime
 
 from PySide6 import QtCore
-from PySide6.QtCore import QAbstractTableModel, QEvent, Qt
+from PySide6.QtCore import QAbstractTableModel, Qt
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QMainWindow,
                                QMessageBox, QStyle, QWidget)
@@ -17,16 +17,18 @@ from ui_mainwindow import Ui_MainWindow
 from ui_wind_addcompra import Ui_wind_add_compra
 from ui_wind_addforn import Ui_wind_add_forn
 from ui_wind_addprod import Ui_wind_add_prod
+from ui_wind_altprod import Ui_wind_alt_prod
 from ui_wind_entraprod import Ui_wind_entr_prod
 from ui_wind_saidaprod import Ui_wind_saida_prod
 
 
 class TableModel(QAbstractTableModel):
-    def __init__(self, data, columns, icon=None):
+    def __init__(self, data, columns, _icon_wrn=None, _icon_ok=None):
         super(TableModel, self).__init__()
         self._data = data
         self.columns = columns
-        self.icon = icon
+        self._icon_wrn = _icon_wrn
+        self._icon_ok = _icon_ok
 
     def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -41,14 +43,15 @@ class TableModel(QAbstractTableModel):
                 return value.strftime("%Y-%m-%d")
             if isinstance(value, float):
                 return "%.2f" % value
-            # Default (anything not captured above: e.g. int)
             if index.column() == 5:
-                return None
+                return ''
             else:
                 return value
 
         if role == Qt.TextAlignmentRole:
             if index.column() == 0:
+                return Qt.AlignVCenter + Qt.AlignHCenter
+            if index.column() == 5:
                 return Qt.AlignVCenter + Qt.AlignHCenter
             if isinstance(value, float):
                 return Qt.AlignVCenter + Qt.AlignRight
@@ -58,14 +61,18 @@ class TableModel(QAbstractTableModel):
         if role == Qt.DecorationRole:
             if index.column() == 5:
                 if value == 1:
-                    if self.icon:
-                        return QIcon(self.icon)
+                    return QIcon(self._icon_wrn)
+                elif value == 0:
+                    return QIcon(self._icon_ok)
 
     def rowCount(self, index):
         return len(self._data)
 
     def columnCount(self, index):
-        return len(self._data[0])
+        try:
+            return len(self._data[0])
+        except IndexError:
+            return 0
 
 
 class Jan_Compra_Prod(QWidget, Ui_wind_add_compra):
@@ -89,6 +96,12 @@ class Jan_Compra_Prod(QWidget, Ui_wind_add_compra):
             ComprasRepo.my_insert(self, pcidprod=idprod.ID_PROD, pclimmin=float(quantidade))
         else:
             ComprasRepo.my_update(self, pcidprod=idprod.ID_PROD, pclimmin=float(quantidade))
+        self.pontocompra = ComprasRepo.my_select(self)
+        for i, reg in enumerate(self.pontocompra):
+            if reg[2] < reg[3]:
+                EstoqueRepo.my_updpc(self, codfabr=reg[0], pc=1)
+            if reg[2] >= reg[3]:
+                EstoqueRepo.my_updpc(self, codfabr=reg[0], pc=0)
         window.carrega_dados("COMPRAS", window.tw_compras)
         window.carrega_dados("ESTOQUE", window.tw_prod)
         window.show_mensagem('>> Ponto de Compra adicionado com sucesso')
@@ -170,6 +183,7 @@ class Jan_Saida_Prod(QWidget, Ui_wind_saida_prod):
         EstoqueRepo.my_updsaldo(self, codfabr=self.cp_codfabr.text(), saldo=saldo)
         window.carrega_dados("SAIDAS", window.tw_saidas)
         window.carrega_dados("ESTOQUE", window.tw_prod)
+        window.carrega_dados("CAMPRAS", window.tw_compras)
         window.show_mensagem('>> Saída de produto efetuada com sucesso')
         self.close_jan_saidaprod()
 
@@ -178,13 +192,12 @@ class Jan_Saida_Prod(QWidget, Ui_wind_saida_prod):
         self.close()
 
 
-class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
+class Jan_Alt_Prod(QWidget, Ui_wind_alt_prod):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
         self.setWindowFlag(Qt.WindowMinimizeButtonHint, on=False)
         self.setWindowFlag(Qt.WindowCloseButtonHint, on=False)
-        self.setWindowTitle('Alteração de Produto Cadastrado')
 
         self.pb_confirma_prod.clicked.connect(self.confirma_alt_prod)
         self.pb_cancela_prod.clicked.connect(window.show_mensagem(''))
@@ -192,12 +205,15 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
 
         self.le_codint.returnPressed.connect(self.le_codforn.setFocus)
         self.le_codforn.returnPressed.connect(self.le_descprod.setFocus)
-        self.le_descprod.returnPressed.connect(self.le_codint.setFocus)
+        self.le_descprod.returnPressed.connect(self.le_saldo.setFocus)
+        self.le_saldo.returnPressed.connect(self.le_codint.setFocus)
 
     def confirma_alt_prod(self):
         codint = self.le_codint.text()
         codfabr = self.le_codforn.text()
         descprod = self.le_descprod.text()
+        nomefabr = self.cb_fornec.currentText()
+        saldo = self.le_saldo.text()
         if not descprod or not codfabr:
             window.show_mensagem(
                 '>> Descrição do Produto e/ou Código do Fabricante não podem ser vazios!')
@@ -214,18 +230,17 @@ class Jan_Alt_Prod(QWidget, Ui_wind_add_prod):
             if result > 0:
                 window.show_mensagem(">> Código do Fabricante já cadastrado!")
                 return
-        nomefabr = self.cb_fornec.currentText()
         id_fabr = FabricantesRepo.my_select_one(self, **{"NOMEFABR": nomefabr})
-        saldo = EstoqueRepo.my_select_one(self, **{"COD_FABR": codfabr_old})
         EstoqueRepo.my_update(self, codfabr_old=codfabr_old,
                               codint=codint,
                               codfabr=codfabr,
                               produto=descprod,
                               idfabr=id_fabr.ID_FABR,
-                              saldo=saldo.SALDO)
-
+                              saldo=saldo)
         window.carrega_dados("ESTOQUE", window.tw_prod)
         window.carrega_dados("ENTRADAS", window.tw_entradas)
+        window. carrega_dados("SAIDAS", window.tw_saidas)
+        window.carrega_dados("COMPRAS", window.tw_compras)
         window.show_mensagem('>> Produto alterado com sucesso!')
         self.close_jan_altprod()
 
@@ -306,9 +321,13 @@ class Jan_Add_Prod(QWidget, Ui_wind_add_prod):
                               codfabr=codfabr,
                               produto=descprod,
                               idfabr=id_fabr.ID_FABR,
-                              saldo=0.0)
+                              saldo=0.0,
+                              pc=0)
         window.tw_prod.scrollToBottom()
         window.carrega_dados("ESTOQUE", window.tw_prod)
+        window.carrega_dados("ENTRADAS", window.tw_entradas)
+        window. carrega_dados("SAIDAS", window.tw_saidas)
+        window.carrega_dados("COMPRAS", window.tw_compras)
         window.show_mensagem('>> Produto adicionado com sucesso!')
         self.close_janprod()
 
@@ -359,6 +378,9 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         MainWindow.resize(self, 800, 600)
         self.setWindowTitle("Sistema de Controle de Estoque")
 
+        self.fr_classif_forn.setGeometry(10, 504, 178, 300)
+        self.fr_classif_forn.hide()
+
         self.tw_prod.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tw_fornec.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tw_entradas.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
@@ -383,77 +405,64 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
 
     def carrega_dados(self, tabela, tab_widget, ordem=None):
         if tabela == "ESTOQUE":
-            self.pixmapi = getattr(QStyle, "SP_MessageBoxWarning")
-            self.pontocompra = ComprasRepo.my_select(self)
-            for i, reg in enumerate(self.pontocompra):
-                if reg[2] < reg[3]:
-                    EstoqueRepo.my_updpc(self, codfabr=reg[0], pc=1)
-                if reg[2] >= reg[3]:
-                    EstoqueRepo.my_updpc(self, codfabr=reg[0], pc=0)
+            self.pixmapi = QStyle.SP_MessageBoxWarning
+            self.pixmapi_ok = QStyle.SP_DialogApplyButton
+            self._icon_wrn = self.style().standardIcon(self.pixmapi)
+            self._icon_ok = self.style().standardIcon(self.pixmapi_ok)
             if ordem is None:
                 self.registros = EstoqueRepo.my_select(self)
             else:
                 self.registros = ordem
             self.colunas = ['Cód. Interno', 'Cód. Fabricante',
                             'Descrição do Produto', 'Fabricante', 'Saldo', 'PC']
-            for i, reg in enumerate(self.registros):
-                if reg[5] is None:
-                    self.icon = None
-                    self.model = TableModel(self.registros, columns=self.colunas,
-                                            icon=self.icon)
-                else:
-                    self.icon = self.style().standardIcon(self.pixmapi)
-                    self.model = TableModel(self.registros, columns=self.colunas,
-                                            icon=self.icon)
-            tab_widget.setModel(self.model)
-            tab_widget.setColumnWidth(0, 150)
-            tab_widget.setColumnWidth(1, 400)
-            tab_widget.setColumnWidth(2, 600)
-            tab_widget.setColumnWidth(3, 200)
-            tab_widget.setColumnWidth(4, 150)
-            tab_widget.setColumnWidth(5, 30)
-            self.model.layoutChanged.emit()
+            self.model = TableModel(self.registros, columns=self.colunas,
+                                    _icon_wrn=self._icon_wrn, _icon_ok=self._icon_ok)
+            self.tamanho = [150, 400, 600, 200, 150, 30]
+            self.columnWidth(tab_widget, self.model, self.tamanho)
         elif tabela == "FABRICANTES":
             if ordem is None:
                 self.registros = FabricantesRepo.my_select(self)
             else:
                 self.registros = ordem
-            self.colunas = ['Fabricante ID', 'Nome do Fabricante']
+            self.colunas = ['ID Fabricante', 'Nome do Fabricante']
             self.model = TableModel(self.registros, columns=self.colunas)
-            tab_widget.setModel(self.model)
-            tab_widget.setColumnWidth(0, 150)
-            tab_widget.setColumnWidth(1, 500)
+            self.tamanho = [150, 500]
+            self.columnWidth(tab_widget, self.model, self.tamanho)
         elif tabela == "ENTRADAS":
-            self.registros = EntradasRepo.my_select(self)
+            if ordem is None:
+                self.registros = EntradasRepo.my_select(self)
+            else:
+                self.registros = ordem
             self.colunas = ['Data Entrada', 'Quantidade', 'Código do Fabricante',
                             'Descrição do Produto']
             self.model = TableModel(self.registros, columns=self.colunas)
-            tab_widget.setModel(self.model)
-            tab_widget.setColumnWidth(0, 170)
-            tab_widget.setColumnWidth(1, 150)
-            tab_widget.setColumnWidth(2, 400)
-            tab_widget.setColumnWidth(3, 550)
+            self.tamanho = [170, 150, 400, 550]
+            self.columnWidth(tab_widget, self.model, self.tamanho)
         elif tabela == "SAIDAS":
-            self.registros = SaidasRepo.my_select(self)
+            if ordem is None:
+                self.registros = SaidasRepo.my_select(self)
+            else:
+                self.registros = ordem
             self.colunas = ['Data de Saída', 'Quantidade', 'Código do Fabricante',
                             'Descrição do Produto', 'Destino do Produto']
             self.model = TableModel(self.registros, columns=self.colunas)
-            tab_widget.setModel(self.model)
-            tab_widget.setColumnWidth(0, 150)
-            tab_widget.setColumnWidth(1, 150)
-            tab_widget.setColumnWidth(2, 350)
-            tab_widget.setColumnWidth(3, 600)
-            tab_widget.setColumnWidth(4, 150)
+            self.tamanho = [150, 150, 350, 600, 150]
+            self.columnWidth(tab_widget, self.model, self.tamanho)
         elif tabela == "COMPRAS":
-            self.registros = ComprasRepo.my_select(self)
+            if ordem is None:
+                self.registros = ComprasRepo.my_select(self)
+            else:
+                self.registros = ordem
             self.colunas = ['Código do Fabricante', 'Descrição do Produto',
                             'Saldo', 'Limite Mínimo']
             self.model = TableModel(self.registros, columns=self.colunas)
-            tab_widget.setModel(self.model)
-            tab_widget.setColumnWidth(0, 350)
-            tab_widget.setColumnWidth(1, 600)
-            tab_widget.setColumnWidth(2, 150)
-            tab_widget.setColumnWidth(3, 150)
+            self.tamanho = [350, 600, 150, 150]
+            self.columnWidth(tab_widget, self.model, self.tamanho)
+
+    def columnWidth(self, tab_widget, model, tamanho):
+        tab_widget.setModel(model)
+        for ind, tam in enumerate(tamanho):
+            tab_widget.setColumnWidth(ind, tam)
 
     def adicionar(self):
         self.show_mensagem('')
@@ -515,6 +524,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             codfabr = self.tw_prod.selectionModel().selectedRows(column=1)
             descprod = self.tw_prod.selectionModel().selectedRows(column=2)
             nomefabr = self.tw_prod.selectionModel().selectedRows(column=3)
+            saldo = self.tw_prod.selectionModel().selectedRows(column=4)
             if len(codint) <= 0:
                 self.show_mensagem(
                     '>> Favor selecionar um item para alteração!')
@@ -531,6 +541,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.jan_alt_prod.le_codint.setText(codint[0].data())
             self.jan_alt_prod.le_codforn.setText(codfabr[0].data())
             self.jan_alt_prod.le_descprod.setText(descprod[0].data())
+            self.jan_alt_prod.le_saldo.setText(saldo[0].data())
             self.pb_alterar.setEnabled(False)
             self.jan_alt_prod.show()
         elif aba == 1:
@@ -606,10 +617,60 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.pb_compra.setEnabled(False)
             self.janCompraProd.show()
 
-    def classificacao(self, b):
-        if self.cb_classif.isChecked():
+    def pesquisa(self):
+        pagina = self.sw_paginas.currentIndex()
+        if pagina == 0:
             aba = self.tabWidget.currentIndex()
-            txtBotao = b.text()
+            if aba == 0:
+                ObjPesquisa = self.le_cad_pesq.text()
+                ObjPesquisa = '%'+ObjPesquisa+'%'
+                self.objPesquisa = EstoqueRepo.my_pesquisa(self, **{"coluna": ObjPesquisa})
+                if len(self.objPesquisa) > 0:
+                    self.show_mensagem('>> Registros encontrados = {}'.format(len(self.objPesquisa)))
+                else:
+                    self.show_mensagem('>> Nenhum registro encontrado')
+                self.carrega_dados("ESTOQUE", self.tw_prod, self.objPesquisa)
+            if aba == 1:
+                ObjPesquisa = self.le_cad_pesq.text()
+                ObjPesquisa = '%'+ObjPesquisa+'%'
+                self.objPesquisa = FabricantesRepo.my_pesquisa(self, **{"coluna": ObjPesquisa})
+                if len(self.objPesquisa) > 0:
+                    self.show_mensagem('>> Registros encontrados = {}'.format(len(self.objPesquisa)))
+                else:
+                    self.show_mensagem('>> Nenhum registro encontrado')
+                self.carrega_dados("FABRICANTES", self.tw_fornec, self.objPesquisa)
+        elif pagina == 1:
+            ObjPesquisa = self.le_entr_pesq.text()
+            ObjPesquisa = '%'+ObjPesquisa+'%'
+            self.objPesquisa = EntradasRepo.my_pesquisa(self, **{"coluna": ObjPesquisa})
+            if len(self.objPesquisa) > 0:
+                self.show_mensagem('>> Registros encontrados = {}'.format(len(self.objPesquisa)))
+            else:
+                self.show_mensagem('>> Nenhum registro encontrado')
+            self.carrega_dados("ENTRADAS", self.tw_entradas, self.objPesquisa)
+        elif pagina == 2:
+            ObjPesquisa = self.le_saida_pesq.text()
+            ObjPesquisa = '%'+ObjPesquisa+'%'
+            self.objPesquisa = SaidasRepo.my_pesquisa(self, **{"coluna": ObjPesquisa})
+            if len(self.objPesquisa) > 0:
+                self.show_mensagem('>> Registros encontrados = {}'.format(len(self.objPesquisa)))
+            else:
+                self.show_mensagem('>> Nenhum registro encontrado')
+            self.carrega_dados("SAIDAS", self.tw_saidas, self.objPesquisa)
+        elif pagina == 3:
+            ObjPesquisa = self.le_compras_pesq.text()
+            ObjPesquisa = '%'+ObjPesquisa+'%'
+            self.objPesquisa = ComprasRepo.my_pesquisa(self, **{"coluna": ObjPesquisa})
+            if len(self.objPesquisa) > 0:
+                self.show_mensagem('>> Registros encontrados = {}'.format(len(self.objPesquisa)))
+            else:
+                self.show_mensagem('>> Nenhum registro encontrado')
+            self.carrega_dados("COMPRAS", self.tw_compras, self.objPesquisa)
+
+    def classificacao(self, b):
+        aba = self.tabWidget.currentIndex()
+        txtBotao = b.text()
+        if self.cb_classif.isChecked():
             if aba == 0:
                 if txtBotao == 'Cód. Interno' and b.isChecked() is True:
                     comando = self.selecao()
@@ -636,21 +697,23 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                     else:
                         self.ordem = EstoqueRepo.my_orderby(self, **{"coluna": comando})
                 self.carrega_dados("ESTOQUE", self.tw_prod, self.ordem)
+        else:
+            self.carrega_dados("ESTOQUE", self.tw_prod)
+        if self.cb_classif_forn.isChecked():
             if aba == 1:
                 if txtBotao == 'Fabricante' and b.isChecked() is True:
                     comando = 'NOMEFABR'
                 else:
-                    if self.rb_fabr.isChecked() is True:
+                    if self.rb_class_fabr.isChecked() is True:
                         comando = 'NOMEFABR'
-                    else:
+                    elif self.rb_class_id.isChecked() is True:
                         comando = 'ID_FABR'
-                if self.cb_decresc.isChecked():
+                if self.cb_decresc_forn.isChecked():
                     self.ordem = FabricantesRepo.my_orderby(self, descendente=True, **{"coluna": comando})
                 else:
                     self.ordem = FabricantesRepo.my_orderby(self, **{"coluna": comando})
                 self.carrega_dados("FABRICANTES", self.tw_fornec, self.ordem)
         else:
-            self.carrega_dados("ESTOQUE", self.tw_prod)
             self.carrega_dados("FABRICANTES", self.tw_fornec)
 
     def categoria(self, b):
@@ -669,38 +732,8 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             return 'ID_FABR'
         if self.rb_saldo.isChecked():
             return 'SALDO'
-# !================= FUNÇÕES AUXILIARES ===================
 
-    def reindex(self):
-        return
-        self.show_mensagem('')
-        aba = self.tabWidget.currentIndex()
-        if aba == 0:
-            df, conn = self.conectar("ESTOQUE")
-            novoindice = 0
-            for itens in range(df.shape[0]):
-                novoindice += 1
-                df.iat[itens, 0] = novoindice
-            df.to_sql("ESTOQUE", conn, if_exists="replace", index=False)
-            conn.commit()
-            conn.close()
-            self.tw_prod.scrollToBottom()
-            self.dados_prod()
-            self.show_mensagem(
-                '>> Re-indexação dos Produtos concluída com sucesso!')
-        elif aba == 1:
-            df, conn = self.conectar("FABRICANTES")
-            novoindice = 0
-            for itens in range(df.shape[0]):
-                novoindice += 1
-                df.iat[itens, 0] = novoindice
-            df.to_sql("FABRICANTES", conn, if_exists="replace", index=False)
-            conn.commit()
-            conn.close()
-            self.tw_fornec.scrollToBottom()
-            self.dados_forn()
-            self.show_mensagem(
-                '>> Re-indexação dos Fornecedores concluída com sucesso!')
+# !================= FUNÇÕES AUXILIARES ===================
 
     def estilos(self):
         self.extra = {
@@ -785,6 +818,15 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.pb_compra.clicked.connect(lambda: self.show_mensagem(''))
         self.pb_compra.clicked.connect(lambda: self.compras())
 
+        self.le_cad_pesq.textChanged.connect(lambda: self.pesquisa())
+        self.le_entr_pesq.textChanged.connect(lambda: self.pesquisa())
+        self.le_saida_pesq.textChanged.connect(lambda: self.pesquisa())
+        self.le_compras_pesq.textChanged.connect(lambda: self.pesquisa())
+        self.le_cad_pesq.returnPressed.connect(lambda: self.pesquisa())
+        self.le_entr_pesq.returnPressed.connect(lambda: self.pesquisa())
+        self.le_saida_pesq.returnPressed.connect(lambda: self.pesquisa())
+        self.le_compras_pesq.returnPressed.connect(lambda: self.pesquisa())
+
         self.cb_classif.stateChanged.connect(lambda: self.classificacao(self.cb_classif))
         self.cb_decresc.stateChanged.connect(lambda: self.classificacao(self.cb_decresc))
         self.rb_codint.toggled.connect(lambda: self.categoria(self.rb_codint))
@@ -793,6 +835,11 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.rb_fabr.toggled.connect(lambda: self.categoria(self.rb_fabr))
         self.rb_saldo.toggled.connect(lambda: self.categoria(self.rb_saldo))
 
+        self.cb_classif_forn.stateChanged.connect(lambda: self.classificacao(self.cb_classif_forn))
+        self.cb_decresc_forn.stateChanged.connect(lambda: self.classificacao(self.cb_decresc_forn))
+        self.rb_class_fabr.toggled.connect(lambda: self.categoria(self.rb_class_fabr))
+        self.rb_class_id.toggled.connect(lambda: self.categoria(self.rb_class_id))
+
         self.tabWidget.currentChanged.connect(lambda x: self.disablebuttons(x))
 
     def disablebuttons(self, index):
@@ -800,10 +847,14 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.pb_entrada.setHidden(True)
             self.pb_saida.setHidden(True)
             self.pb_compra.setHidden(True)
+            self.fr_classif.hide()
+            self.fr_classif_forn.show()
         else:
             self.pb_entrada.setHidden(False)
             self.pb_saida.setHidden(False)
             self.pb_compra.setHidden(False)
+            self.fr_classif.show()
+            self.fr_classif_forn.hide()
 
     def show_mensagem(self, m):
         self.lb_mensagens.setText(m)

@@ -18,16 +18,17 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QTransform)
 from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication, QCheckBox,
     QComboBox, QFrame, QHBoxLayout, QHeaderView,
-    QLabel, QLayout, QMainWindow, QPushButton,
-    QRadioButton, QSizePolicy, QSpacerItem, QStackedWidget,
-    QTabWidget, QTableView, QVBoxLayout, QWidget)
+    QLabel, QLayout, QLineEdit, QMainWindow,
+    QPushButton, QRadioButton, QSizePolicy, QSpacerItem,
+    QStackedWidget, QTabWidget, QTableView, QVBoxLayout,
+    QWidget)
 import rc_icons
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1321, 750)
+        MainWindow.resize(1572, 750)
         font = QFont()
         font.setPointSize(14)
         MainWindow.setFont(font)
@@ -65,10 +66,9 @@ class Ui_MainWindow(object):
         self.fr_funcoes.setFrameShape(QFrame.StyledPanel)
         self.fr_funcoes.setFrameShadow(QFrame.Raised)
         self.verticalLayout_8 = QVBoxLayout(self.fr_funcoes)
-        self.verticalLayout_8.setSpacing(9)
+        self.verticalLayout_8.setSpacing(3)
         self.verticalLayout_8.setContentsMargins(5, 5, 5, 5)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.verticalLayout_8.setContentsMargins(9, 9, 9, 0)
         self.pb_cadastros = QPushButton(self.fr_funcoes)
         self.pb_cadastros.setObjectName(u"pb_cadastros")
         self.pb_cadastros.setMinimumSize(QSize(0, 56))
@@ -149,11 +149,58 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_8.addItem(self.verticalSpacer)
 
+        self.fr_classif_forn = QFrame(self.fr_funcoes)
+        self.fr_classif_forn.setObjectName(u"fr_classif_forn")
+        self.fr_classif_forn.setMinimumSize(QSize(0, 300))
+        self.fr_classif_forn.setMaximumSize(QSize(16777215, 300))
+        self.fr_classif_forn.setFrameShape(QFrame.StyledPanel)
+        self.fr_classif_forn.setFrameShadow(QFrame.Sunken)
+        self.fr_classif_forn.setLineWidth(3)
+        self.fr_classif_forn.setMidLineWidth(3)
+        self.verticalLayout_14 = QVBoxLayout(self.fr_classif_forn)
+        self.verticalLayout_14.setSpacing(3)
+        self.verticalLayout_14.setContentsMargins(5, 5, 5, 5)
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.cb_classif_forn = QCheckBox(self.fr_classif_forn)
+        self.cb_classif_forn.setObjectName(u"cb_classif_forn")
+        self.cb_classif_forn.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_14.addWidget(self.cb_classif_forn)
+
+        self.cb_decresc_forn = QCheckBox(self.fr_classif_forn)
+        self.cb_decresc_forn.setObjectName(u"cb_decresc_forn")
+        self.cb_decresc_forn.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_14.addWidget(self.cb_decresc_forn)
+
+        self.rb_class_id = QRadioButton(self.fr_classif_forn)
+        self.rb_class_id.setObjectName(u"rb_class_id")
+        self.rb_class_id.setCursor(QCursor(Qt.PointingHandCursor))
+
+        self.verticalLayout_14.addWidget(self.rb_class_id)
+
+        self.rb_class_fabr = QRadioButton(self.fr_classif_forn)
+        self.rb_class_fabr.setObjectName(u"rb_class_fabr")
+        self.rb_class_fabr.setCursor(QCursor(Qt.PointingHandCursor))
+        self.rb_class_fabr.setChecked(True)
+
+        self.verticalLayout_14.addWidget(self.rb_class_fabr)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_14.addItem(self.verticalSpacer_2)
+
+
+        self.verticalLayout_8.addWidget(self.fr_classif_forn)
+
         self.fr_classif = QFrame(self.fr_funcoes)
         self.fr_classif.setObjectName(u"fr_classif")
         self.fr_classif.setMinimumSize(QSize(0, 300))
+        self.fr_classif.setMaximumSize(QSize(16777215, 300))
         self.fr_classif.setFrameShape(QFrame.StyledPanel)
-        self.fr_classif.setFrameShadow(QFrame.Raised)
+        self.fr_classif.setFrameShadow(QFrame.Sunken)
+        self.fr_classif.setLineWidth(3)
+        self.fr_classif.setMidLineWidth(3)
         self.verticalLayout_13 = QVBoxLayout(self.fr_classif)
         self.verticalLayout_13.setSpacing(3)
         self.verticalLayout_13.setContentsMargins(5, 5, 5, 5)
@@ -439,23 +486,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addWidget(self.pb_alterar)
 
-        self.pb_pesquisar = QPushButton(self.fr_comm_ctrl)
-        self.pb_pesquisar.setObjectName(u"pb_pesquisar")
-        self.pb_pesquisar.setMinimumSize(QSize(150, 30))
-        self.pb_pesquisar.setMaximumSize(QSize(16777215, 30))
-        self.pb_pesquisar.setFont(font1)
-        self.pb_pesquisar.setCursor(QCursor(Qt.PointingHandCursor))
-        self.pb_pesquisar.setStyleSheet(u"QPushButton:hover{\n"
-"	background-color: rgb(0, 153, 255);\n"
-"	color: rgb(255, 255, 255);\n"
-"	border-radius: 10px;\n"
-"}\n"
-"QPushButton{\n"
-"	border-radius: 10px;\n"
-"}")
-
-        self.horizontalLayout_5.addWidget(self.pb_pesquisar)
-
         self.pb_entrada = QPushButton(self.fr_comm_ctrl)
         self.pb_entrada.setObjectName(u"pb_entrada")
         self.pb_entrada.setMinimumSize(QSize(150, 30))
@@ -492,7 +522,7 @@ class Ui_MainWindow(object):
 
         self.pb_compra = QPushButton(self.fr_comm_ctrl)
         self.pb_compra.setObjectName(u"pb_compra")
-        self.pb_compra.setMinimumSize(QSize(170, 30))
+        self.pb_compra.setMinimumSize(QSize(230, 30))
         self.pb_compra.setMaximumSize(QSize(16777215, 30))
         self.pb_compra.setFont(font1)
         self.pb_compra.setCursor(QCursor(Qt.PointingHandCursor))
@@ -510,6 +540,14 @@ class Ui_MainWindow(object):
         self.horizontalSpacer_2 = QSpacerItem(118, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_5.addItem(self.horizontalSpacer_2)
+
+        self.le_cad_pesq = QLineEdit(self.fr_comm_ctrl)
+        self.le_cad_pesq.setObjectName(u"le_cad_pesq")
+        self.le_cad_pesq.setMinimumSize(QSize(300, 30))
+        self.le_cad_pesq.setMaximumSize(QSize(300, 30))
+        self.le_cad_pesq.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.horizontalLayout_5.addWidget(self.le_cad_pesq)
 
 
         self.verticalLayout_5.addWidget(self.fr_comm_ctrl)
@@ -542,6 +580,7 @@ class Ui_MainWindow(object):
         self.tw_prod.setAlternatingRowColors(True)
         self.tw_prod.setSelectionMode(QAbstractItemView.SingleSelection)
         self.tw_prod.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tw_prod.setIconSize(QSize(25, 25))
         self.tw_prod.setSortingEnabled(False)
         self.tw_prod.horizontalHeader().setStretchLastSection(True)
         self.tw_prod.verticalHeader().setStretchLastSection(False)
@@ -594,10 +633,9 @@ class Ui_MainWindow(object):
         self.fr_entr_cabec.setFrameShape(QFrame.StyledPanel)
         self.fr_entr_cabec.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_6 = QHBoxLayout(self.fr_entr_cabec)
-        self.horizontalLayout_6.setSpacing(15)
+        self.horizontalLayout_6.setSpacing(3)
         self.horizontalLayout_6.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.horizontalLayout_6.setContentsMargins(10, 5, 10, 10)
         self.pb_entr_excl = QPushButton(self.fr_entr_cabec)
         self.pb_entr_excl.setObjectName(u"pb_entr_excl")
         self.pb_entr_excl.setMinimumSize(QSize(150, 30))
@@ -653,6 +691,14 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_6.addItem(self.horizontalSpacer_3)
 
+        self.le_entr_pesq = QLineEdit(self.fr_entr_cabec)
+        self.le_entr_pesq.setObjectName(u"le_entr_pesq")
+        self.le_entr_pesq.setMinimumSize(QSize(300, 30))
+        self.le_entr_pesq.setMaximumSize(QSize(300, 30))
+        self.le_entr_pesq.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.horizontalLayout_6.addWidget(self.le_entr_pesq)
+
 
         self.verticalLayout_10.addWidget(self.fr_entr_cabec)
 
@@ -686,10 +732,9 @@ class Ui_MainWindow(object):
         self.fr_saida_cabec.setFrameShape(QFrame.StyledPanel)
         self.fr_saida_cabec.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_7 = QHBoxLayout(self.fr_saida_cabec)
-        self.horizontalLayout_7.setSpacing(15)
+        self.horizontalLayout_7.setSpacing(3)
         self.horizontalLayout_7.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_7.setContentsMargins(10, 5, 10, 10)
         self.pb_saida_excl = QPushButton(self.fr_saida_cabec)
         self.pb_saida_excl.setObjectName(u"pb_saida_excl")
         self.pb_saida_excl.setMinimumSize(QSize(150, 30))
@@ -745,6 +790,14 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer_4)
 
+        self.le_saida_pesq = QLineEdit(self.fr_saida_cabec)
+        self.le_saida_pesq.setObjectName(u"le_saida_pesq")
+        self.le_saida_pesq.setMinimumSize(QSize(300, 30))
+        self.le_saida_pesq.setMaximumSize(QSize(300, 30))
+        self.le_saida_pesq.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.horizontalLayout_7.addWidget(self.le_saida_pesq)
+
 
         self.verticalLayout_11.addWidget(self.fr_saida_cabec)
 
@@ -778,10 +831,9 @@ class Ui_MainWindow(object):
         self.fr_compras_cabec.setFrameShape(QFrame.StyledPanel)
         self.fr_compras_cabec.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_8 = QHBoxLayout(self.fr_compras_cabec)
-        self.horizontalLayout_8.setSpacing(15)
+        self.horizontalLayout_8.setSpacing(3)
         self.horizontalLayout_8.setContentsMargins(5, 5, 5, 5)
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.horizontalLayout_8.setContentsMargins(10, 5, 10, 10)
         self.pb_compras_excl = QPushButton(self.fr_compras_cabec)
         self.pb_compras_excl.setObjectName(u"pb_compras_excl")
         self.pb_compras_excl.setMinimumSize(QSize(150, 30))
@@ -836,6 +888,14 @@ class Ui_MainWindow(object):
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
         self.horizontalLayout_8.addItem(self.horizontalSpacer_5)
+
+        self.le_compras_pesq = QLineEdit(self.fr_compras_cabec)
+        self.le_compras_pesq.setObjectName(u"le_compras_pesq")
+        self.le_compras_pesq.setMinimumSize(QSize(300, 30))
+        self.le_compras_pesq.setMaximumSize(QSize(300, 30))
+        self.le_compras_pesq.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.horizontalLayout_8.addWidget(self.le_compras_pesq)
 
 
         self.verticalLayout_12.addWidget(self.fr_compras_cabec)
@@ -918,6 +978,10 @@ class Ui_MainWindow(object):
         self.pb_entradas.setText(QCoreApplication.translate("MainWindow", u"Entradas", None))
         self.pb_saidas.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
         self.pb_compras.setText(QCoreApplication.translate("MainWindow", u"\u00c0 Comprar", None))
+        self.cb_classif_forn.setText(QCoreApplication.translate("MainWindow", u"Classificar", None))
+        self.cb_decresc_forn.setText(QCoreApplication.translate("MainWindow", u"Decrescente", None))
+        self.rb_class_id.setText(QCoreApplication.translate("MainWindow", u"ID Fabricante", None))
+        self.rb_class_fabr.setText(QCoreApplication.translate("MainWindow", u"Fabricante", None))
         self.cb_classif.setText(QCoreApplication.translate("MainWindow", u"Classificar", None))
         self.cb_decresc.setText(QCoreApplication.translate("MainWindow", u"Decrescente", None))
         self.rb_codint.setText(QCoreApplication.translate("MainWindow", u"C\u00f3d. Interno", None))
@@ -932,21 +996,24 @@ class Ui_MainWindow(object):
         self.pb_adicionar.setText(QCoreApplication.translate("MainWindow", u"Adicionar", None))
         self.pb_excluir.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_alterar.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
-        self.pb_pesquisar.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.pb_entrada.setText(QCoreApplication.translate("MainWindow", u"Entrada", None))
         self.pb_saida.setText(QCoreApplication.translate("MainWindow", u"Sa\u00eddas", None))
         self.pb_compra.setText(QCoreApplication.translate("MainWindow", u"Ponto de Compra", None))
+        self.le_cad_pesq.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar...", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_prod), QCoreApplication.translate("MainWindow", u"Produtos", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_forn), QCoreApplication.translate("MainWindow", u"Fabricantes", None))
         self.pb_entr_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_entr_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_entr_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
+        self.le_entr_pesq.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar...", None))
         self.pb_saida_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_saida_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_saida_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
+        self.le_saida_pesq.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar...", None))
         self.pb_compras_excl.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.pb_compras_alt.setText(QCoreApplication.translate("MainWindow", u"Alterar", None))
         self.pb_compras_pesq.setText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
+        self.le_compras_pesq.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar...", None))
         self.lb_mensagens.setText(QCoreApplication.translate("MainWindow", u"Mensagens", None))
     # retranslateUi
 

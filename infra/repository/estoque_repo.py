@@ -2,7 +2,7 @@ from infra.configs.connection import DBConnectionHandler
 from infra.entities.estoque import Estoque, Fabricantes
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql import text
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, or_
 
 
 class EstoqueRepo:
@@ -37,11 +37,11 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_insert(self, codint, codfabr, produto, idfabr, saldo):
+    def my_insert(self, codint, codfabr, produto, idfabr: int, saldo: float, pc: int):
         with DBConnectionHandler() as db:
             try:
                 data_insert = Estoque(COD_INT=codint, COD_FABR=codfabr, PRODUTO=produto,
-                                      ID_FABR=idfabr, SALDO=saldo)
+                                      ID_FABR=idfabr, SALDO=saldo, PC=pc)
                 db.session.add(data_insert)
                 db.session.commit()
             except Exception as exception:
@@ -58,7 +58,7 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_update(self, codfabr_old, codint, codfabr, produto, idfabr, saldo):
+    def my_update(self, codfabr_old, codint, codfabr, produto, idfabr: int, saldo: float):
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr_old).update({
@@ -69,7 +69,7 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_updsaldo(self, codfabr, saldo):
+    def my_updsaldo(self, codfabr, saldo: float):
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr).update({
@@ -79,7 +79,7 @@ class EstoqueRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_updpc(self, codfabr, pc):
+    def my_updpc(self, codfabr, pc: int):
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Estoque).filter(Estoque.COD_FABR == codfabr).update({
@@ -167,6 +167,32 @@ class EstoqueRepo:
                         .order_by(asc(Fabricantes.NOMEFABR)).order_by(asc(Estoque.PRODUTO))\
                         .all()
                 return data
+            except Exception as exception:
+                db.session.rollback()
+                raise exception
+
+    def my_pesquisa(self, **kwargs):
+        coluna = kwargs.pop('coluna', None)
+        with DBConnectionHandler() as db:
+            try:
+                data = db.session.query(Estoque)\
+                    .select_from(Fabricantes)\
+                    .join(Estoque, Fabricantes.ID_FABR == Estoque.ID_FABR)\
+                    .with_entities(
+                        Estoque.COD_INT,
+                        Estoque.COD_FABR,
+                        Estoque.PRODUTO,
+                        Fabricantes.NOMEFABR,
+                        Estoque.SALDO,
+                        Estoque.PC)\
+                    .filter(or_(Estoque.PRODUTO.like(coluna),
+                                Estoque.COD_INT.like(coluna),
+                                Fabricantes.NOMEFABR.like(coluna),
+                                Estoque.COD_FABR.like(coluna)))\
+                    .all()
+                return data
+            except NoResultFound:
+                return None
             except Exception as exception:
                 db.session.rollback()
                 raise exception

@@ -13,7 +13,7 @@ class FabricantesRepo:
                     .with_entities(
                     Fabricantes.ID_FABR,
                     Fabricantes.NOMEFABR
-                    )\
+                )\
                     .all()
                 return data
             except Exception as exception:
@@ -23,7 +23,8 @@ class FabricantesRepo:
     def my_select_one(self, **kwargs):
         with DBConnectionHandler() as db:
             try:
-                data = db.session.query(Fabricantes).filter_by(**kwargs).first()
+                data = db.session.query(
+                    Fabricantes).filter_by(**kwargs).first()
                 return data
             except NoResultFound:
                 return None
@@ -81,6 +82,23 @@ class FabricantesRepo:
                         .order_by(asc(text(coluna)))\
                         .all()
                 return data
+            except Exception as exception:
+                db.session.rollback()
+                raise exception
+
+    def my_pesquisa(self, **kwargs):
+        coluna = kwargs.pop('coluna', None)
+        with DBConnectionHandler() as db:
+            try:
+                data = db.session.query(Fabricantes)\
+                    .with_entities(
+                        Fabricantes.ID_FABR,
+                        Fabricantes.NOMEFABR)\
+                    .filter(Fabricantes.NOMEFABR.like(coluna))\
+                    .all()
+                return data
+            except NoResultFound:
+                return None
             except Exception as exception:
                 db.session.rollback()
                 raise exception

@@ -12,7 +12,7 @@ class Estoque(Base):
     PRODUTO = Column(String, nullable=False)
     ID_FABR = Column(Integer, ForeignKey("fabricantes.ID_FABR"))
     SALDO = Column(Float, nullable=False)
-    PC = Column(Integer)
+    PC = Column(Integer, nullable=False)
     fabricante = relationship("Fabricantes", backref="estoque", lazy="subquery")
 
     def __repr__(self):

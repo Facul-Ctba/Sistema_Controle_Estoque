@@ -2,7 +2,7 @@ from infra.configs.connection import DBConnectionHandler
 from infra.entities.estoque import Entradas, Estoque
 from sqlalchemy.orm.exc import NoResultFound
 # from sqlalchemy.sql import text
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 
 class EntradasRepo:
@@ -23,10 +23,13 @@ class EntradasRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_select_one(self, **kwargs):
+    def my_select_one(self, indata, inquant: float, inidprod: int):
         with DBConnectionHandler() as db:
             try:
-                data = db.session.query(Entradas).filter_by(**kwargs).first()
+                data = db.session.query(Entradas).filter(and_(Entradas.IN_DATA.like(indata),
+                                                              Entradas.IN_QUANT.like(inquant),
+                                                              Entradas.IN_IDPROD.like(inidprod)))\
+                                 .first()
                 return data
             except NoResultFound:
                 return None
@@ -46,11 +49,11 @@ class EntradasRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_delete(self, inidprod):
+    def my_delete(self, inid: int):
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Entradas).filter(
-                    Entradas.IN_IDPROD == inidprod).delete()
+                    Entradas.IN_ID == inid).delete()
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()

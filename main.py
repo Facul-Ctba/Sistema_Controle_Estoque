@@ -1,78 +1,29 @@
 import sys
-from datetime import datetime
 
 from PySide6 import QtCore
-from PySide6.QtCore import QAbstractTableModel, Qt
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (QAbstractItemView, QApplication, QMainWindow,
-                               QMessageBox, QStyle, QWidget)
+from PySide6.QtCore import Qt, QMarginsF
+from PySide6.QtGui import (QCursor, QTextFrameFormat, QTextCursor,
+                           QTextDocument, QFont, QTextTableFormat,
+                           QTextLength, QPageLayout)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QCheckBox,
+                               QMainWindow, QMessageBox, QStyle, QWidget,
+                               QDialog)
+from PySide6.QtPrintSupport import QPrintDialog, QPrintPreviewDialog, QPrinter
 from qt_material import apply_stylesheet, list_themes
 
+from infra.classes.classes import Edit_TableModel, TableModel
 from infra.repository.compras_repo import ComprasRepo
 from infra.repository.entradas_repo import EntradasRepo
 from infra.repository.estoque_repo import EstoqueRepo
 from infra.repository.fabricante_repo import FabricantesRepo
 from infra.repository.saidas_repo import SaidasRepo
-from ui_mainwindow import Ui_MainWindow
-from ui_wind_addcompra import Ui_wind_add_compra
-from ui_wind_addforn import Ui_wind_add_forn
-from ui_wind_addprod import Ui_wind_add_prod
-from ui_wind_altprod import Ui_wind_alt_prod
-from ui_wind_entraprod import Ui_wind_entr_prod
-from ui_wind_saidaprod import Ui_wind_saida_prod
-
-
-class TableModel(QAbstractTableModel):
-    def __init__(self, data, columns, _icon_wrn=None, _icon_ok=None):
-        super(TableModel, self).__init__()
-        self._data = data
-        self.columns = columns
-        self._icon_wrn = _icon_wrn
-        self._icon_ok = _icon_ok
-
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self.columns[section]
-        if orientation == Qt.Vertical and role == Qt.DisplayRole:
-            return f"{section + 1}"
-
-    def data(self, index, role):
-        value = self._data[index.row()][index.column()]
-        if role == Qt.DisplayRole:
-            if isinstance(value, datetime):
-                return value.strftime("%Y-%m-%d")
-            if isinstance(value, float):
-                return "%.2f" % value
-            if index.column() == 5:
-                return ''
-            else:
-                return value
-
-        if role == Qt.TextAlignmentRole:
-            if index.column() == 0:
-                return Qt.AlignVCenter + Qt.AlignHCenter
-            if index.column() == 5:
-                return Qt.AlignVCenter + Qt.AlignHCenter
-            if isinstance(value, float):
-                return Qt.AlignVCenter + Qt.AlignRight
-            if isinstance(value, int):
-                return Qt.AlignVCenter + Qt.AlignHCenter
-
-        if role == Qt.DecorationRole:
-            if index.column() == 5:
-                if value == 1:
-                    return QIcon(self._icon_wrn)
-                elif value == 0:
-                    return QIcon(self._icon_ok)
-
-    def rowCount(self, index):
-        return len(self._data)
-
-    def columnCount(self, index):
-        try:
-            return len(self._data[0])
-        except IndexError:
-            return 0
+from infra.janelas.ui_mainwindow import Ui_MainWindow
+from infra.janelas.ui_wind_addcompra import Ui_wind_add_compra
+from infra.janelas.ui_wind_addforn import Ui_wind_add_forn
+from infra.janelas.ui_wind_addprod import Ui_wind_add_prod
+from infra.janelas.ui_wind_altprod import Ui_wind_alt_prod
+from infra.janelas.ui_wind_entraprod import Ui_wind_entr_prod
+from infra.janelas.ui_wind_saidaprod import Ui_wind_saida_prod
 
 
 class Jan_Compra_Prod(QWidget, Ui_wind_add_compra):
@@ -237,6 +188,12 @@ class Jan_Alt_Prod(QWidget, Ui_wind_alt_prod):
                               produto=descprod,
                               idfabr=id_fabr.ID_FABR,
                               saldo=saldo)
+        self.pontocompra = ComprasRepo.my_select(self)
+        for i, reg in enumerate(self.pontocompra):
+            if reg[2] < reg[3]:
+                EstoqueRepo.my_updpc(self, codfabr=reg[0], pc=1)
+            if reg[2] >= reg[3]:
+                EstoqueRepo.my_updpc(self, codfabr=reg[0], pc=0)
         window.carrega_dados("ESTOQUE", window.tw_prod)
         window.carrega_dados("ENTRADAS", window.tw_entradas)
         window. carrega_dados("SAIDAS", window.tw_saidas)
@@ -435,7 +392,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                 self.registros = ordem
             self.colunas = ['Data Entrada', 'Quantidade', 'Código do Fabricante',
                             'Descrição do Produto']
-            self.model = TableModel(self.registros, columns=self.colunas)
+            self.model = Edit_TableModel(self.registros, columns=self.colunas)
             self.tamanho = [170, 150, 400, 550]
             self.columnWidth(tab_widget, self.model, self.tamanho)
         elif tabela == "SAIDAS":
@@ -445,7 +402,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                 self.registros = ordem
             self.colunas = ['Data de Saída', 'Quantidade', 'Código do Fabricante',
                             'Descrição do Produto', 'Destino do Produto']
-            self.model = TableModel(self.registros, columns=self.colunas)
+            self.model = Edit_TableModel(self.registros, columns=self.colunas)
             self.tamanho = [150, 150, 350, 600, 150]
             self.columnWidth(tab_widget, self.model, self.tamanho)
         elif tabela == "COMPRAS":
@@ -455,7 +412,7 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
                 self.registros = ordem
             self.colunas = ['Código do Fabricante', 'Descrição do Produto',
                             'Saldo', 'Limite Mínimo']
-            self.model = TableModel(self.registros, columns=self.colunas)
+            self.model = Edit_TableModel(self.registros, columns=self.colunas)
             self.tamanho = [350, 600, 150, 150]
             self.columnWidth(tab_widget, self.model, self.tamanho)
 
@@ -574,6 +531,72 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
             self.janEntrProd.cp_saldo.setText(saldo[0].data())
             self.pb_entrada.setEnabled(False)
             self.janEntrProd.show()
+
+    def entr_excl(self):
+        self.show_mensagem('')
+        try:
+            codfabr = self.tw_entradas.selectionModel().selectedRows(column=2)[0].data()
+        except IndexError:
+            codfabr = None
+        if not codfabr:
+            self.show_mensagem(
+                    '>> Favor selecionar um item para exclusão!')
+            return
+        quantidade = float(self.tw_entradas.selectionModel().selectedRows(column=1)[0].data())
+        indexes = self.tw_entradas.selectedIndexes()
+        saldo = EstoqueRepo.my_select_one(self, **{"COD_FABR": codfabr})
+        idprod = saldo.ID_PROD
+        msg, sim, nao, cb = self.msg_Box_cb("Exclusão de Entrada",
+                                            "Confirma exclusão da Entrada?",
+                                            f"Saldo atual em estoque = {saldo.SALDO}",
+                                            "Baixar do saldo em estoque")
+        if msg.clickedButton() == nao:
+            return
+        if msg.clickedButton() == sim:
+            indata = indexes[0].data()
+            regtodel = EntradasRepo.my_select_one(self, indata, quantidade, idprod)
+            EntradasRepo.my_delete(self, regtodel.IN_ID)
+            if cb.isChecked():
+                if saldo.SALDO >= quantidade:
+                    novosaldo = saldo.SALDO - quantidade
+                    EstoqueRepo.my_updsaldo(self, codfabr, novosaldo)
+                else:
+                    novosaldo = 0.0
+                    EstoqueRepo.my_updsaldo(self, codfabr, novosaldo)
+            self.carrega_dados("ENTRADAS", self.tw_entradas)
+            self.carrega_dados("ESTOQUE", self.tw_prod)
+            self.show_mensagem('>> Entrada excluída com sucesso!')
+
+    def saida_excl(self):
+        self.show_mensagem('')
+        try:
+            codfabr = self.tw_saidas.selectionModel().selectedRows(column=2)[0].data()
+        except IndexError:
+            codfabr = None
+        if not codfabr:
+            self.show_mensagem(
+                    '>> Favor selecionar um item para exclusão!')
+            return
+        quantidade = float(self.tw_saidas.selectionModel().selectedRows(column=1)[0].data())
+        indexes = self.tw_saidas.selectedIndexes()
+        saldo = EstoqueRepo.my_select_one(self, **{"COD_FABR": codfabr})
+        idprod = saldo.ID_PROD
+        msg, sim, nao, cb = self.msg_Box_cb("Exclusão de Saída",
+                                            "Confirma exclusão da Saída?",
+                                            f"Saldo atual em estoque = {saldo.SALDO}",
+                                            "Alterar o saldo em estoque")
+        if msg.clickedButton() == nao:
+            return
+        if msg.clickedButton() == sim:
+            outdata = indexes[0].data()
+            regtodel = SaidasRepo.my_select_one(self, outdata, quantidade, idprod)
+            SaidasRepo.my_delete(self, regtodel.OUT_ID)
+            if cb.isChecked():
+                novosaldo = saldo.SALDO + quantidade
+                EstoqueRepo.my_updsaldo(self, codfabr, novosaldo)
+            self.carrega_dados("SAIDAS", self.tw_saidas)
+            self.carrega_dados("ESTOQUE", self.tw_prod)
+            self.show_mensagem('>> Saída excluída com sucesso!')
 
     def saida(self):
         aba = self.tabWidget.currentIndex()
@@ -733,11 +756,105 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         if self.rb_saldo.isChecked():
             return 'SALDO'
 
+    def handlePrint(self):
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setFullPage(True)
+        printer.setPageMargins(QMarginsF(1, 1, 0, 0), QPageLayout.Unit.Millimeter)
+        dialog = QPrintDialog(printer, self)
+        if dialog.exec() == QDialog.Accepted:
+            self.handlePaintRequest(printer)
+
+    def handlePreview(self):
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setFullPage(True)
+        printer.setPageMargins(QMarginsF(1, 1, 0, 0), QPageLayout.Unit.Millimeter)
+        dialog = QPrintPreviewDialog(printer, self)
+        dialog.paintRequested.connect(self.handlePaintRequest)
+        dialog.exec()
+
+    def handlePaintRequest(self, printer):
+        document = QTextDocument()
+        document.setDocumentMargin(0)
+        document.setDefaultFont(QFont('Arial', 10))
+        cursor = QTextCursor(document)
+        cursor.movePosition(QTextCursor.Start)
+        tabformato = QTextTableFormat()
+        tabformato.setBorder(1)
+        tabformato.setBorderStyle(QTextFrameFormat.BorderStyle_Solid)
+        tabformato.setCellSpacing(1.5)
+        tabformato.setCellPadding(1.5)
+        tabformato.setTopMargin(0)
+        tabformato.setRightMargin(0)
+        pagina = self.sw_paginas.currentIndex()
+        if pagina == 0:
+            aba = self.tabWidget.currentIndex()
+            if aba == 0:
+                model = self.tw_prod.model()
+                cabec = ['Cod.Int.', 'Cod. Fabricante', 'Produto', 'Fabricante', 'Saldo', 'PC']
+                constraints = [QTextLength(QTextLength.FixedLength, 50),
+                               QTextLength(QTextLength.FixedLength, 220),
+                               QTextLength(QTextLength.FixedLength, 250),
+                               QTextLength(QTextLength.FixedLength, 70),
+                               QTextLength(QTextLength.FixedLength, 40),
+                               QTextLength(QTextLength.FixedLength, 30)]
+                cursor.insertHtml('<center><span style="color:#0000ff;"><h1>Relatório do Estoque<h1></span>')
+            if aba == 1:
+                model = self.tw_fornec.model()
+                cabec = ['ID Fabricante', 'Fabricante']
+                constraints = [QTextLength(QTextLength.FixedLength, 100),
+                               QTextLength(QTextLength.FixedLength, 250)]
+                cursor.insertHtml('<center><span style="color:#0000ff;"><h1>Relatório de Fabricantes<h1></span>')
+                tabformato.setAlignment(Qt.AlignHCenter)
+        elif pagina == 1:
+            model = self.tw_entradas.model()
+            cabec = ['Data Entrada', 'Quantidade', 'Cod. Fabricante', 'Produto']
+            constraints = [QTextLength(QTextLength.FixedLength, 100),
+                           QTextLength(QTextLength.FixedLength, 100),
+                           QTextLength(QTextLength.FixedLength, 220),
+                           QTextLength(QTextLength.FixedLength, 250)]
+            cursor.insertHtml('<center><span style="color:#0000ff;"><h1>Relatório de Entradas<h1></span>')
+        elif pagina == 2:
+            model = self.tw_saidas.model()
+            cabec = ['Data Saída', 'Quant.', 'Cod. Fabricante', 'Produto', 'Destino']
+            constraints = [QTextLength(QTextLength.FixedLength, 75),
+                           QTextLength(QTextLength.FixedLength, 50),
+                           QTextLength(QTextLength.FixedLength, 200),
+                           QTextLength(QTextLength.FixedLength, 230),
+                           QTextLength(QTextLength.FixedLength, 110)]
+            cursor.insertHtml('<center><span style="color:#0000ff;"><h1>Relatório de Saídas<h1></span>')
+        elif pagina == 3:
+            model = self.tw_compras.model()
+            cabec = ['Código Fabricante', 'Produto', 'Saldo', 'Limite Mín.']
+            constraints = [QTextLength(QTextLength.FixedLength, 250),
+                           QTextLength(QTextLength.FixedLength, 250),
+                           QTextLength(QTextLength.FixedLength, 60),
+                           QTextLength(QTextLength.FixedLength, 80)]
+            cursor.insertHtml('<center><span style="color:#0000ff;"><h1>Relatório do Ponto de Compra<h1></span>')
+        tabformato.setColumnWidthConstraints(constraints)
+        linha = model.rowCount(0)
+        coluna = model.columnCount(0)
+        lista = []
+        for row in range(linha):
+            lista.append(list())
+            for col in range(coluna):
+                ind = model.index(row, col)
+                item = model.data(ind, Qt.UserRole)
+                lista[row].append(str(item))
+        cursor.insertTable(linha+1, coluna, tabformato)
+        for cab in (cabec):
+            cursor.insertText(str(cab))
+            cursor.movePosition(QTextCursor.NextCell)
+        for row in range(linha):
+            for col in range(coluna):
+                cursor.insertText(lista[row][col])
+                cursor.movePosition(QTextCursor.NextCell)
+        cursor.movePosition(QTextCursor.End)
+        document.print_(printer)
+
 # !================= FUNÇÕES AUXILIARES ===================
 
     def estilos(self):
         self.extra = {
-            # Font
             'font_family': 'Arial',
             'font_size': '14px',
             'line_height': '14px',
@@ -767,23 +884,6 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.animation.setEndValue(newWidth)
         self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
         self.animation.start()
-
-    def Ativa_filtro(self):
-        if self.rb_filtro.isChecked():
-            self.tw_prod.setSortingEnabled(True)
-            self.tw_fornec.setSortingEnabled(True)
-        else:
-            self.tw_prod.setSortingEnabled(False)
-            self.tw_fornec.setSortingEnabled(False)
-            self.carrega_dados("ESTOQUE", self.tw_prod)
-            self.carrega_dados("FABRICANTES", self.tw_fornec)
-
-    def Ativa_entr_filtro(self):
-        if self.rb_entr_filtro.isChecked():
-            self.tw_entradas.setSortingEnabled(True)
-        else:
-            self.tw_entradas.setSortingEnabled(False)
-            self.carrega_dados("ENTRADAS", self.tw_entradas)
 
     def pagina(self, x):
         self.lb_pagina.setText(x)
@@ -840,6 +940,18 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
         self.rb_class_fabr.toggled.connect(lambda: self.categoria(self.rb_class_fabr))
         self.rb_class_id.toggled.connect(lambda: self.categoria(self.rb_class_id))
 
+        self.pb_entr_excl.clicked.connect(lambda: self.entr_excl())
+        self.pb_saida_excl.clicked.connect(lambda: self.saida_excl())
+
+        self.pb_print.clicked.connect(lambda: self.handlePrint())
+        self.pb_prever.clicked.connect(lambda: self.handlePreview())
+        self.pb_print_ent.clicked.connect(lambda: self.handlePrint())
+        self.pb_prever_ent.clicked.connect(lambda: self.handlePreview())
+        self.pb_print_sai.clicked.connect(lambda: self.handlePrint())
+        self.pb_prever_sai.clicked.connect(lambda: self.handlePreview())
+        self.pb_print_com.clicked.connect(lambda: self.handlePrint())
+        self.pb_prever_com.clicked.connect(lambda: self.handlePreview())
+
         self.tabWidget.currentChanged.connect(lambda x: self.disablebuttons(x))
 
     def disablebuttons(self, index):
@@ -862,12 +974,32 @@ class MainWindow(QMainWindow, Ui_MainWindow, Ui_wind_add_prod,
     def msg_Box(self, titulo, mensagem):
         msg = QMessageBox()
         msg.setWindowTitle(titulo)
-        sim = msg.addButton("Sim", QMessageBox.AcceptRole)
-        nao = msg.addButton("Não", QMessageBox.RejectRole)
         msg.setText(mensagem)
         msg.setIcon(QMessageBox.Warning)
+        sim = msg.addButton("Sim", QMessageBox.AcceptRole)
+        nao = msg.addButton("Não", QMessageBox.RejectRole)
+        msg.setStyleSheet("QLabel{font-size: 20px;} QPushButton{ width:100px; font-size: 18px; }")
+        msg.setCursor(QCursor(Qt.PointingHandCursor))
         msg.exec()
         return msg, sim, nao
+
+    def msg_Box_cb(self, titulo, mensagem, info, cb_txt):
+        msg = QMessageBox()
+        cb = QCheckBox()
+        msg.setStyleSheet("QLabel{font-size: 18px;} QPushButton{ width:100px; font-size: 18px; }")
+        msg.setCursor(QCursor(Qt.PointingHandCursor))
+        msg.setWindowTitle(titulo)
+        msg.setText(mensagem)
+        msg.setInformativeText(info)
+        cb.setText(cb_txt)
+        msg.setIcon(QMessageBox.Warning)
+        msg.setCheckBox(cb)
+        sim = msg.addButton("Sim", QMessageBox.AcceptRole)
+        nao = msg.addButton("Não", QMessageBox.RejectRole)
+        res_cb = msg.checkBox()
+        msg.exec()
+        return msg, sim, nao, res_cb
+
 
 # !================== PROGRAMA PRINCIPAL ======================
 
@@ -876,7 +1008,6 @@ if __name__ == "__main__":
     app = QApplication([])
     window = MainWindow()
     extra = {
-            # Font
             'font_family': 'Arial',
             'font_size': '14px',
             'line_height': '14px',

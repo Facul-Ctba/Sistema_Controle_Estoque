@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1572</width>
-    <height>750</height>
+    <width>1784</width>
+    <height>882</height>
    </rect>
   </property>
   <property name="font">
@@ -884,7 +884,7 @@
                      <widget class="QPushButton" name="pb_adicionar">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>125</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -922,7 +922,7 @@ QPushButton{
                      <widget class="QPushButton" name="pb_excluir">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>125</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -960,7 +960,7 @@ QPushButton{
                      <widget class="QPushButton" name="pb_alterar">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>125</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -998,7 +998,7 @@ QPushButton{
                      <widget class="QPushButton" name="pb_entrada">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>125</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -1036,7 +1036,7 @@ QPushButton{
                      <widget class="QPushButton" name="pb_saida">
                       <property name="minimumSize">
                        <size>
-                        <width>150</width>
+                        <width>125</width>
                         <height>30</height>
                        </size>
                       </property>
@@ -1120,6 +1120,70 @@ QPushButton{
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_print">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(13, 154, 201);	
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Imprimir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_prever">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(152, 108, 250);
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Visualizar</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLineEdit" name="le_cad_pesq">
@@ -1395,82 +1459,6 @@ QPushButton{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pb_entr_alt">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(255, 255, 0);
-	color: rgb(0, 0, 0);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Alterar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="pb_entr_pesq">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(0, 153, 255);
-	color: rgb(255, 255, 255);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Pesquisar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <spacer name="horizontalSpacer_3">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -1482,6 +1470,70 @@ QPushButton{
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_print_ent">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(13, 154, 201);	
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Imprimir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_prever_ent">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(152, 108, 250);
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Visualizar</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLineEdit" name="le_entr_pesq">
@@ -1527,6 +1579,9 @@ QPushButton{
                    </property>
                    <property name="lineWidth">
                     <number>2</number>
+                   </property>
+                   <property name="editTriggers">
+                    <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
                    </property>
                    <property name="alternatingRowColors">
                     <bool>true</bool>
@@ -1615,82 +1670,6 @@ QPushButton{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pb_saida_alt">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(255, 255, 0);
-	color: rgb(0, 0, 0);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Alterar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="pb_saida_pesq">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(0, 153, 255);
-	color: rgb(255, 255, 255);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Pesquisar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <spacer name="horizontalSpacer_4">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -1702,6 +1681,70 @@ QPushButton{
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_print_sai">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(13, 154, 201);	
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Imprimir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_prever_sai">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(152, 108, 250);
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Visualizar</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLineEdit" name="le_saida_pesq">
@@ -1835,82 +1878,6 @@ QPushButton{
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pb_compras_alt">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(255, 255, 0);
-	color: rgb(0, 0, 0);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Alterar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QPushButton" name="pb_compras_pesq">
-                      <property name="minimumSize">
-                       <size>
-                        <width>150</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>16777215</width>
-                        <height>30</height>
-                       </size>
-                      </property>
-                      <property name="font">
-                       <font>
-                        <family>Arial</family>
-                        <pointsize>14</pointsize>
-                       </font>
-                      </property>
-                      <property name="cursor">
-                       <cursorShape>PointingHandCursor</cursorShape>
-                      </property>
-                      <property name="styleSheet">
-                       <string notr="true">QPushButton:hover{
-	background-color: rgb(0, 153, 255);
-	color: rgb(255, 255, 255);
-	border-radius: 10px;
-}
-QPushButton{
-	border-radius: 10px;
-}</string>
-                      </property>
-                      <property name="text">
-                       <string>Pesquisar</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
                      <spacer name="horizontalSpacer_5">
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -1922,6 +1889,70 @@ QPushButton{
                        </size>
                       </property>
                      </spacer>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_print_com">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(13, 154, 201);	
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Imprimir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pb_prever_com">
+                      <property name="minimumSize">
+                       <size>
+                        <width>125</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton:hover{
+	background-color: rgb(152, 108, 250);
+	color: rgb(255, 255, 255);
+	border-radius: 10px;
+}
+QPushButton{
+	border-radius: 10px;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Visualizar</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <widget class="QLineEdit" name="le_compras_pesq">

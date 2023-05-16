@@ -1,7 +1,7 @@
 from infra.configs.connection import DBConnectionHandler
 from infra.entities.estoque import Saidas, Estoque
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 
 class SaidasRepo:
@@ -24,10 +24,13 @@ class SaidasRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_select_one(self, **kwargs):
+    def my_select_one(self, outdata, outquant: float, outidprod: int):
         with DBConnectionHandler() as db:
             try:
-                data = db.session.query(Saidas).filter_by(**kwargs).first()
+                data = db.session.query(Saidas).filter(and_(Saidas.OUT_DATA.like(outdata),
+                                                            Saidas.OUT_QUANT.like(outquant),
+                                                            Saidas.OUT_IDPROD.like(outidprod)))\
+                                 .first()
                 return data
             except NoResultFound:
                 return None
@@ -48,11 +51,11 @@ class SaidasRepo:
                 db.session.rollback()
                 raise exception
 
-    def my_delete(self, outidprod):
+    def my_delete(self, outid: int):
         with DBConnectionHandler() as db:
             try:
                 db.session.query(Saidas).filter(
-                    Saidas.OUT_IDPROD == outidprod).delete()
+                    Saidas.OUT_ID == outid).delete()
                 db.session.commit()
             except Exception as exception:
                 db.session.rollback()

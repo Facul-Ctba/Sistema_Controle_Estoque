@@ -1,0 +1,25 @@
+{
+    // Use o IntelliSense para saber mais sobre os atributos possíveis.
+    // Focalizar para exibir as descrições dos atributos existentes.
+    // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+    
+        {
+            "name": "Python: Arquivo Atual",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "python.terminal.activateEnvironment" : false
+        }
+        
+        {
+            "python.pythonPath": "c:\\Users\\susan\\Documents\\PythonScripts\\venv\\Scripts\\python.exe",
+            // to fix 'Timeout waiting for debugger connections'
+            "python.terminal.activateEnvironment" : false
+        }
+    ]
+}
